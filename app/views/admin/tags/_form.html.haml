@@ -1,0 +1,12 @@
+.form-area
+  %p.title
+    = form.label :title
+    = form.text_field :title, :class => 'textbox', :maxlength => 255
+  %div
+    = form.label :description
+    = form.text_area :description, :class => "textarea", :style => "width: 100%"
+  %p.buttons
+    = save_model_button(@tag)
+    = save_model_and_continue_editing_button(@tag)
+    or
+    = link_to "Cancel", admin_tags_url

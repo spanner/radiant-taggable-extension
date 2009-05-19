@@ -1,0 +1,10 @@
+%ul#search_list
+  - unless @labels.empty?
+    - @labels.each do |label| 
+      - dom_id = "label_#{label.id}"
+      %li.label{ :id => dom_id }
+         %strong
+           = link_to label.title, edit_label_url(label)
+  - else
+    %li
+      %p.note There were no labels found

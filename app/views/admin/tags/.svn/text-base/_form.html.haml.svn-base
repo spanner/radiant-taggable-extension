@@ -1,0 +1,14 @@
+.form-area
+  %p.title
+    %label{:for=>"label_title"}
+      Label
+    = text_field "label", "title", :class => 'textbox', :maxlength => 255
+  %div
+    %label{:for=>"label_description"}
+      Description
+    ~ text_area "label", "description", :class => "textarea", :style => "width: 100%"
+  %p.buttons
+    = save_model_button(@label)
+    = save_model_and_continue_editing_button(@label)
+    or
+    = link_to "Cancel", labels_url

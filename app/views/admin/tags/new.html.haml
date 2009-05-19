@@ -1,0 +1,11 @@
+- include_stylesheet 'admin/labels' 
+
+%h1
+  New Tag
+
+%p 
+  Tags are usually added while editing pages (or other tagged items). There you can create several tags at once just by typing a list into the 'keywords' field.
+  If you'd like a bit more control than that, you can also create and describe tags one at a time here:
+  
+- form_for :tag, :url => admin_tags_path, :html => { :method => "post", :multipart => true } do |form|
+  = render :partial => 'form', :object => form

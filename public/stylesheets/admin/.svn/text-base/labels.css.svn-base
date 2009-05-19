@@ -1,0 +1,30 @@
+#labels-table table { margin-bottom: 0; }
+td.label-title { font-size: 115%; font-weight: bold;}
+td.label-title a { text-decoration: none; color: black; }
+td.label-description {
+  font-size: 80%;
+  color: #999;
+}
+
+input.keywords {
+  
+  
+}
+
+
+
+
+
+
+
+
+
+
+#show-bucket {
+  float: right;
+  position: relative;
+}
+#show-bucket a { display: block; text-decoration: none; color: black; border: 1px solid rgb(0, 92, 157);
+  line-height: 20px; width: 120px; cursor: pointer; margin: 0 5px; padding: 5px 10px;
+  font-size: 80%; font-style: italic; background: white; -moz-border-radius: 3px; -webkit-border-radius: 3px;
+}

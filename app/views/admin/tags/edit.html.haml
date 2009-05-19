@@ -1,0 +1,16 @@
+- include_stylesheet 'admin/tags' 
+
+- if @tag.new_record?
+  %h1 New Tag
+- else
+  %h1
+    Edit Tag
+%p
+  The description you enter here will be dropped into the top of the tag page (above the list of tagged items) when there eventually is one.
+    
+- form_for :tag, :url => admin_tag_path(@tag), :html => { :method => "put", :multipart => true } do |f|
+  = render :partial => 'form', :object => f
+
+    
+    
+    

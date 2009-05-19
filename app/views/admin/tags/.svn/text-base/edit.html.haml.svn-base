@@ -1,0 +1,12 @@
+- include_stylesheet 'admin/labels' 
+
+- if @label.new_record?
+  %h1 New Label
+- else
+  %h1 Edit Label
+- form_for :label, :url => label_path(@label), :html => { :method => "put", :multipart => true } do |form|
+  = render :partial => 'form', :locals => { :form => form }
+
+    
+    
+    

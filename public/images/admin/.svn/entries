@@ -1,0 +1,29 @@
+8
+
+dir
+119
+http://svn.spanner.org/tlms/trunk/vendor/extensions/radiant_labels/public/images/admin
+http://svn.spanner.org/tlms
+
+
+
+2008-09-29T12:46:49.158712Z
+114
+will
+
+
+svn:special svn:externals svn:needs-lock
+
+new-label.png
+file
+
+
+
+
+2008-09-29T12:30:40.000000Z
+29a0281457b5c2e2f28c59b1c73e4106
+2008-09-29T12:46:49.158712Z
+114
+will
+has-props
+

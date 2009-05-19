@@ -1,0 +1,8 @@
+#tags-table table { margin-bottom: 0; }
+td.tag-title { font-size: 115%; font-weight: bold;}
+td.tag-title a { text-decoration: none; color: black; }
+td.tag-description {
+  font-size: 80%;
+  color: #999;
+}
+

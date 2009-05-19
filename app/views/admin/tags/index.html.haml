@@ -1,0 +1,44 @@
+- include_stylesheet 'admin/tags'
+
+%h1 Tags
+
+%p 
+  Tags are most easy to define while you edit something - just type in a name - but you can also use this page to add, edit and tidy the set. 
+  Cloud and tree views will be linked in here once the basics are working.
+  
+%p
+  = link_to image_tag('admin/new-tag.png', :alt => 'New Tag'), new_admin_tag_url
+    
+#tags_table
+  %table{ :class => "index", :cellpadding => "0", :cellspacing => "0", :border => "0"}
+    %thead
+      %tr
+        %th.tag-title Title
+        %th.tag-description Description
+        %th.modify{:colspan =>"2"} Modify
+
+    %tbody
+      - unless @tags.empty?
+        - for tag in @tags 
+          %tr.node.level-1
+            %td.tag-title
+              = link_to tag.title, edit_admin_tag_url(:id => tag.id) 
+            %td.tag-description
+              = tag.description
+              %br
+              %strong
+                applied to 
+                = tag.pages_count
+                = pluralize(tag.pages_count, 'page')
+            %td.remove
+              = link_to image_tag('admin/remove.png', :alt => 'Remove Asset'), remove_admin_tag_url(:id => tag)
+      - else
+        %tr
+          %td.note{ :colspan => "4" } 
+            No tags here sir.
+    
+
+  %script{ :type => "text/javascript"}
+    // <! [CDATA[
+    new RuledTable('tags')
+    //]

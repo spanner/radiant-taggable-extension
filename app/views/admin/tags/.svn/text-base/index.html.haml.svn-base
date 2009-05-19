@@ -1,0 +1,11 @@
+- include_stylesheet 'admin/labels'
+
+%h1 Labels
+
+%p 
+  Labels are usually defined when editing pages or uploading assets, but you can use this page to add, edit and tidy if you prefer.
+  
+%p= link_to image_tag('admin/new-label.png', :alt => 'New Label'), new_label_path
+    
+#labels_table
+  = render :partial => 'label_table'
