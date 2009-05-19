@@ -9,16 +9,19 @@ This extension differs in a few ways that matter to me but may not to you:
 * Tags are (going to be) hierarchical: you can tag something with /games/cards/poker and start to build a taxonomy (NB. for now I've cut this out to get the core functionality right)
 * We replace the keywords mechanism on pages rather than adding another one.
 * Anything can be tagged. By default we only do pages but other extensions can participate with a single line in a model class. See the [paperclipped_taggable](https://github.com/spanner/radiant-paperclipped_taggable-extension) extension for an example or just put `is_taggable` at the top of a model class and see what happens.
-* There's a handy tag-completer on the edit-page page
+* There is (soon) a handy tag-completer on the edit-page page
 * We don't use `has_many_polymorphs` (it burns!)
-* We're not so focused on tag clouds - though you can still make them - but more on archival and linking functions like 'related pages' and 'more about' and all that
+* Or any of the tagging libraries: it only takes a few named_scope calls
+* We're not so focused on tag clouds - though you can still (soon) make them - but more on archival and linking functions like 'related pages' and 'more about' and all that
 * it's multi-site compatible: if our fork is installed then you get site-scoped tags and taggings.
 
 When you first install the extension you shouldn't see much difference: all we do out of the box is take over the keywords field in the page-edit view.
 
 # Status 
 
-This extension is new but the code is well broken-in and has been in production for a couple of years. I finally got round to packaging it up properly but I wouldn't say I'd quite finished that job yet.
+This extension is new but the code is well broken-in and has been in production for a couple of years.
+
+I'm finally getting round to packaging it up properly but I wouldn't say I'd quite finished that job yet! Lots of functionality has been removed from this version so that I can refactor it a bit. Some of that will appear in `paperclipped_taggable`, some in here, some in other extensions.
 
 # Warnings
 
