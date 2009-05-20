@@ -13,7 +13,7 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
       return if is_taggable?
 
       has_many :taggings, :as => :tagged
-      has_many :tags, :through => :taggings
+      has_many :attached_tags, :through => :taggings, :source => :tag    # can't be just has_many :tags because that stomps on the radius tags in Page.
       named_scope :from_tags, lambda { |tags| {
         :select => "#{self.table_name}.*, count(taggings.id) as match_count", 
         :joins => "INNER JOIN taggings on taggings.tagged_id = #{self.table_name}.id AND taggings.tagged_type = '#{self.to_s}'", 
@@ -53,13 +53,13 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
   module TaggableInstanceMethods
     
     def keywords 
-      self.tags.map {|t| t.title}.join(', ')
+      self.attached_tags.map {|t| t.title}.join(', ')
     end
     
     def keywords=(somewords="")
       tags = Tag.from_list(somewords)
-      self.tags.each { |tag| self.tags.delete(tag) unless tags.include?(tag) }
-      tags.each { |tag| self.tags << tag unless self.tags.include?(tag) }
+      self.attached_tags.each { |tag| self.attached_tags.delete(tag) unless tags.include?(tag) }
+      tags.each { |tag| self.attached_tags << tag unless self.attached_tags.include?(tag) }
     end
     
     def keywords_before_type_cast   # ugh! but necessary for form_helper
@@ -67,20 +67,20 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
     end
 
     def add_tag(word=nil)
-      self.tags << Tag.for(word) if word && !word.blank?
+      self.attached_tags << Tag.for(word) if word && !word.blank?
     end
 
     def remove_tag(word=nil)
       tag = Tag.find_by_title(word) if word && !word.blank?
-      self.tags.delete(tag) if tag
+      self.attached_tags.delete(tag) if tag
     end
     
     def related
-      self.tags.empty? ? [] : self.class.from_tags(self.tags) - [self]
+      self.attached_tags.empty? ? [] : self.class.from_tags(self.attached_tags) - [self]
     end
     
     def closely_related
-      self.tags.empty? ? [] : self.class.from_tags(self.tags).select { |p| p != self && p.match_count.to_i >= self.tags.count }
+      self.attached_tags.empty? ? [] : self.class.from_tags(self.attached_tags).select { |p| p != self && p.match_count.to_i >= self.attached_tags.count }
     end
     
   end

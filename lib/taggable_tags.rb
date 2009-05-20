@@ -43,7 +43,7 @@ module TaggableTags
   end
   tag 'page:tags:each' do |tag|
     result = []
-    tags = tag.locals.page.tags.find(:all, _find_options(tag))
+    tags = tag.locals.page.attached_tags.find(:all, _find_options(tag))
     tags.each do |item|
       tag.locals.tag = item
       result << tag.expand
@@ -54,19 +54,18 @@ module TaggableTags
   # related pages
   
   desc %{
-    Cycles through related pages of either page or asset in descending order of relatedness
+    Cycles through related pages in descending order of relatedness
     
     *Usage:* 
     <pre><code><r:related_pages:each>...</r:related_pages:each></code></pre>
   }    
   tag 'related_pages' do |tag|
-    raise TagError, "page or asset must be defined for related_pages tag" unless tag.locals.page or tag.locals.asset
+    raise TagError, "page must be defined for related_pages tag" unless tag.locals.page
     tag.expand
   end
   tag 'related_pages:each' do |tag|
     result = []
-    thing = tag.locals.page || tag.locals.asset
-    thing.related_pages.each do |page|
+    tag.locals.page.related_pages.each do |page|
       tag.locals.page = page
       result << tag.expand
     end 
@@ -153,8 +152,7 @@ module TaggableTags
     def _get_tags(tag)
       tags = []
       tags = Tag.from_list(tag.attr['tags']) if tag.attr['tags'] && !tag.attr['tags'].blank?
-      tags ||= tag.locals.page.tags if tags.empty? && tag.locals.page
-      tags ||= tag.locals.asset.tags if tags.empty? && tag.locals.asset
+      tags ||= tag.locals.page.attached_tags if tags.empty? && tag.locals.page
       raise TagError, "can't find any tags" if tags.empty?
       tags
     end
