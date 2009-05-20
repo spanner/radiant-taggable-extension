@@ -18,17 +18,12 @@ class Tag < ActiveRecord::Base
   def self.for(title)
     self.find_or_create_by_title(title)
   end
-
-  def page_taggings
-    self.taggings.of_pages
-  end
-
-  def pages
-    self.page_taggings.map{|l| l.labelled}
-  end
-    
-  def pages_count
-    self.page_taggings.length
+  
+  def self.addTaggableMethodsTo(classname)
+    Tagging.send :named_scope, "of_#{classname.downcase.pluralize}".intern, :conditions => { :tagged_type => classname.to_s }
+    define_method("#{classname.downcase}_taggings") { self.taggings.send "of_#{classname.to_s}".to_i }
+    define_method("#{classname.downcase.pluralize}") { self.send("#{classname.to_s.downcase}_taggings".to_i).map{|l| l.tagged} }
+    define_method("#{classname.downcase.pluralize}_count") { self.send("#{classname.to_s.downcase}_taggings".to_i).length }
   end
     
 end

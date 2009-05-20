@@ -10,11 +10,7 @@ module TaggableModel
 
     def is_taggable
       return if is_taggable?
-      class_eval <<-EO
-        extend TaggableModel::TaggableClassMethods
-        include TaggableModel::TaggableInstanceMethods
-      EO
-      
+
       has_many :taggings, :as => :tagged
       has_many :tags, :through => :taggings
       named_scope :from_tags, lambda { |tags| {
@@ -24,6 +20,13 @@ module TaggableModel
         :group => "taggings.tagged_id", 
         :order => 'match_count DESC'
       }}
+      
+      Tag.addTaggableMethodsTo(self.to_s)
+      
+      class_eval {
+        extend TaggableModel::TaggableClassMethods
+        include TaggableModel::TaggableInstanceMethods
+      }
     end
   end
 
@@ -53,7 +56,7 @@ module TaggableModel
       tags.each { |tag| self.tags << tag unless self.tags.include?(tag) }
     end
     
-    def keywords_before_type_cast   # ugh! but necessary for form_helper to show the tags in the keyword boxm when editing pages
+    def keywords_before_type_cast   # ugh! but necessary for form_helper
       keywords
     end
 
