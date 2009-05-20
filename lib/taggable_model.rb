@@ -1,4 +1,5 @@
-module TaggableModel
+module TaggableModel      # for inclusion into ActiveRecord::Base
+  
   def self.included(base)
     base.extend ClassMethods
   end
@@ -41,6 +42,11 @@ module TaggableModel
 
     def is_taggable?
       true
+    end
+    
+    unless methods.include?('is_site_scoped') 
+      define_method("is_site_scoped") { |*args| logger.warn "Multi_site not installed or not correct version: #{self} is not site-scoped." }
+      define_method("is_site_scoped?") { |*args| false }
     end
   end
   
