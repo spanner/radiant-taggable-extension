@@ -31,17 +31,18 @@ I'm finally getting round to packaging it up properly but I wouldn't say I'd qui
 
 ## Requirements
 
-* Radiant 0.7.x.
+* Radiant 0.7.x. and 0.8.0
 
 ## Installation
 
 As usual:
 
-	git submodule add git://github.com/spanner/radiant-taggable-extension.git vendor/extensions/taggable
+	git clone git://github.com/spanner/radiant-taggable-extension.git vendor/extensions/taggable
+	rake radiant:extensions:taggable:migrate
 	rake radiant:extensions:taggable:update
-	
-The update task can be omitted: it only brings over some CSS that might provide a useful starting point.
 
+The update task (aside from the usuals) will bring over a basic CSS file for styling tags (only as a starting point and customize at will!).
+	
 ## Author and copyright
 
 * William Ross, for spanner. will at spanner.org
