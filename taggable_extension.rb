@@ -13,7 +13,7 @@ class TaggableExtension < Radiant::Extension
   end
   
   def activate
-    ActiveRecord::Base.send :include, MultiSite::TaggableModel
+    ActiveRecord::Base.send :include, TaggableModel
     Page.send :is_taggable
     Page.send :include, TaggableTags
     UserActionObserver.instance.send :add_observer!, Tag 
