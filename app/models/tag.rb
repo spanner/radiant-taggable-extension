@@ -3,6 +3,7 @@ class Tag < ActiveRecord::Base
   belongs_to :created_by, :class_name => 'User'
   belongs_to :updated_by, :class_name => 'User'
   has_many :taggings, :dependent => :destroy
+  
       
   named_scope :with_count, {
     :select => "tags.*, count(taggings.id) as use_count", 
