@@ -12,13 +12,17 @@ class Tag < ActiveRecord::Base
     :order => 'title ASC'
   }
   
+  def sited?
+    !reflect_on_association(:site).nil?
+  end
+
   def self.from_list(list='')
     return [] if list.blank?
     list.split(/[,;]\s*/).uniq.map { |t| self.find_or_create_by_title(t) }
   end
   
   def self.for(title)
-    self.find_or_create_by_title(title)
+    sited? ? self.find_or_create_by_title_and_site_id(title, Page.current_site.id) : self.find_or_create_by_title(title)
   end
   
   def self.addTaggableMethodsTo(classname)
@@ -26,6 +30,12 @@ class Tag < ActiveRecord::Base
     define_method("#{classname.downcase}_taggings") { self.taggings.send "of_#{classname.to_s}".to_i }
     define_method("#{classname.downcase.pluralize}") { self.send("#{classname.to_s.downcase}_taggings".to_i).map{|l| l.tagged} }
     define_method("#{classname.downcase.pluralize}_count") { self.send("#{classname.to_s.downcase}_taggings".to_i).length }
+  end
+  
+  def self.all_with_popularity(account)
+    tags = sited? ? Page.current_site.tags.with_popularity : self.with_popularity
+    tags.each {|t| t.used = t.use_count }
+    tags.uniq
   end
     
 end
