@@ -3,7 +3,7 @@
 
 class TaggableExtension < Radiant::Extension
   version "1.0"
-  description "General purpose tagging and taxonomy-management extension: more versatile but less focused than the tags extension"
+  description "General purpose tagging and taxonomy extension: more versatile but less immediately useful than the tags extension"
   url "http://spanner.org/radiant/taggable"
   
   define_routes do |map|
