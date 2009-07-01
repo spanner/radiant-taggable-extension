@@ -58,27 +58,6 @@ Because it's useful on the tag page.
 
 Add tags to your pages by putting a comma-separated list in the 'keywords' box. That's about to get more helpful and a lot more prominent.
 
-### To display a tag cloud:
-
-1. Create a page at (say) /tags. Give it the TagPage type and this body:
-
-	<h1>Tag: <r:tag:name /></h1>
-	
-	<p><r:tag:description /></p>
-
-	<ul>
-	  <r:tag:pages:each>
-	    <li><r:crumbed_link /></li>
-	  </r:tag:pages:each>
-	</ul>
-
-2. Include the sample tagcloud.css in your styles.
-3. Put a tag cloud somewhere on a page:
-
-	<r:tag_cloud url="/" destination="/tags" />
-
-4. Seek venture capital
-
 ### To show related pages:
 
 Put this in your layout:
@@ -92,10 +71,27 @@ Put this in your layout:
 	  </ul>
 	</r:if_tags>
 
-## Next 
+### To display a tag cloud:
+
+Create a page at (say) /tags. Give it the TagPage type and this body:
+
+	<h1>Tag: <r:tag:name /></h1>
+	<p><r:tag:description /></p>
+	<ul>
+	  <r:tag:pages:each>
+	    <li><r:crumbed_link /></li>
+	  </r:tag:pages:each>
+	</ul>
+
+Include the sample tagcloud.css in your styles and put a tag cloud somewhere on a page. By default it will show tags for the current page and its descendants, so you probably want to tell it to show the whole site:
+
+	<r:tag_cloud url="/" destination="/tags" />
+
+Seek venture capital.
+
+## Next steps
 
 The next job here is to bring the page-tagging out into a more visible place and add an auto-completer to improve tagging consistency, but before that I need to bring `paperclipped_taggable` up to date.
-
 	
 ## Status 
 
@@ -109,7 +105,7 @@ Lots of functionality has been removed from this version so that I can refactor 
 
 ## Requirements
 
-* Radiant 0.7.x. or 0.8.0
+* Radiant 0.7.x. Probably fine with 0.8.0: haven't tried yet.
 
 ## Installation
 
@@ -119,7 +115,7 @@ As usual:
 	rake radiant:extensions:taggable:migrate
 	rake radiant:extensions:taggable:update
 
-The update task (aside from the usual) will bring over a basic CSS file for styling tags (only as a starting point and customize at will!).
+The update task will bring over a couple of CSS files for styling tags but you'll want to improve those.
 	
 ## Author and copyright
 
