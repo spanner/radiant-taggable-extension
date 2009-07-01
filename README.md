@@ -23,7 +23,7 @@ The **TagPage** page type is just a handy way of catching tag parameters: any pa
 	/archive/tags/lasagne
 	/archive/tags/butterfly
 	
-And so on, and the right tag will be retrieved, if it exists, and made available to radius tags. In a future version we will do the right thing with a list of tags but for now, just the one.
+and the right tag will be retrieved, if it exists, and made available to the page. In a future version we will do the right thing with a list of tags but for now only the first one is used.
 
 ## Radius tags
 
@@ -43,7 +43,7 @@ currently only populated in a tag cloud:
 	<r:tag:use_count />
 	<r:tag:cloud_band />
 
-only really useful in a TagPage:
+and only really useful in a TagPage:
 
 	<r:if_tag>...</r:if_tag>
 	<r:unless_tag>...</r:unless_tag>
@@ -52,7 +52,7 @@ and also:
 
 	<r:crumbed_link />
 	
-Because it's useful on the tag page.
+which I find useful where page names are ambiguous.
 
 ## Usage
 
@@ -87,7 +87,7 @@ Include the sample tagcloud.css in your styles and put a tag cloud somewhere on 
 
 	<r:tag_cloud url="/" destination="/tags" />
 
-Seek venture capital.
+Seek venture capital immediately.
 
 ## Next steps
 
@@ -97,7 +97,7 @@ The next job here is to bring the page-tagging out into a more visible place and
 
 New and probably fragile. The underlying code is fairly well broken-in and has been in production for a couple of years, but I've rearranged it quite drastically and the interface stuff is all new.
 
-Lots of functionality has been removed from this version so that I can refactor it a bit. Some of that will appear in `paperclipped_taggable`, some in here, some in other extensions.
+Lots of functionality has been removed from this version so that I can refactor it. Some of that will appear in `paperclipped_taggable`, some in here, some in other extensions.
 
 ## Warnings
 
