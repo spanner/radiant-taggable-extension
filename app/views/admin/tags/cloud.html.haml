@@ -1,0 +1,12 @@
+- include_stylesheet 'admin/tags'
+- url = Radiant::Config['tags.page'] || '/tags'
+
+%h1 Tag cloud
+
+%p
+  = link_to "&larr; view as list", admin_tags_url
+
+%ul.cloud
+  - @tags.each do |tag|
+    %li{:class => "cloud_#{tag.cloud_band}"}
+      = link_to tag.title, admin_tag_url(tag)

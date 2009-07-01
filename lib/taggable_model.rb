@@ -94,7 +94,7 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
     
     def with_children
       this_generation = [self]
-      return this_generation unless self.respond_to?(:children)
+      return this_generation unless self.respond_to?(:children) && self.children.any?
       family = [self]
       while this_generation.any? && next_generation = self.class.children_of(this_generation)
         family.push(*next_generation)

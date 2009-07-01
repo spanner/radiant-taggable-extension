@@ -1,6 +1,7 @@
 class Tag < ActiveRecord::Base
 
-  attr_accessor :use_count, :cloud_band
+  attr_accessor :cloud_band
+  
   belongs_to :created_by, :class_name => 'User'
   belongs_to :updated_by, :class_name => 'User'
   has_many :taggings, :dependent => :destroy
@@ -8,8 +9,8 @@ class Tag < ActiveRecord::Base
 
   named_scope :with_count, {
     :select => "tags.*, count(taggings.id) as use_count", 
-    :joins => "INNER JOIN taggings on taggings.tag_id = tags.id", 
-    :group => "taggings.tag_id", 
+    :joins => "LEFT JOIN taggings on taggings.tag_id = tags.id", 
+    :group => "tags.id",
     :order => 'title ASC'
   }
   
@@ -31,7 +32,7 @@ class Tag < ActiveRecord::Base
     }
   }
   
-  def sited?
+  def self.sited?
     !reflect_on_association(:site).nil?
   end
 
@@ -41,7 +42,7 @@ class Tag < ActiveRecord::Base
   end
   
   def self.for(title)
-    sited? ? self.find_or_create_by_title_and_site_id(title, Page.current_site.id) : self.find_or_create_by_title(title)
+    self.sited? ? self.find_or_create_by_title_and_site_id(title, Page.current_site.id) : self.find_or_create_by_title(title)
   end
   
   def self.banded(tags, bands=6)
@@ -59,9 +60,9 @@ class Tag < ActiveRecord::Base
     
   def self.addTaggableMethodsTo(classname)
     Tagging.send :named_scope, "of_#{classname.downcase.pluralize}".intern, :conditions => { :tagged_type => classname.to_s }
-    define_method("#{classname.downcase}_taggings") { self.taggings.send "of_#{classname.to_s}".to_i }
-    define_method("#{classname.downcase.pluralize}") { self.send("#{classname.to_s.downcase}_taggings".to_i).map{|l| l.tagged} }
-    define_method("#{classname.downcase.pluralize}_count") { self.send("#{classname.to_s.downcase}_taggings".to_i).length }
+    define_method("#{classname.downcase}_taggings") { self.taggings.send "of_#{classname.downcase.pluralize}".intern }
+    define_method("#{classname.downcase.pluralize}") { self.send("#{classname.to_s.downcase}_taggings".intern).map{|l| l.tagged} }
+    define_method("#{classname.downcase.pluralize}_count") { self.send("#{classname.to_s.downcase}_taggings".intern).length }
   end
       
 end

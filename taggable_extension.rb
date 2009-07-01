@@ -1,19 +1,17 @@
-# Uncomment this if you reference any of your controllers in activate
-# require_dependency 'application'
-
 class TaggableExtension < Radiant::Extension
   version "1.0"
   description "General purpose tagging and taxonomy extension: more versatile but less immediately useful than the tags extension"
   url "http://spanner.org/radiant/taggable"
   
   define_routes do |map|
-    map.namespace :admin, :member => { :remove => :get } do |admin|
-      admin.resources :tags
+    map.namespace :admin do |admin|
+      admin.resources :tags, :collection => {:cloud => :get}
     end
   end
   
   def activate
     ActiveRecord::Base.send :include, TaggableModel
+    TagPage
     Page.send :is_taggable
     Page.send :include, TaggableTags
     UserActionObserver.instance.send :add_observer!, Tag 
@@ -21,7 +19,7 @@ class TaggableExtension < Radiant::Extension
   end
   
   def deactivate
-    # admin.tabs.remove "Taggable"
+    admin.tabs.remove "Tags"
   end
   
 end
