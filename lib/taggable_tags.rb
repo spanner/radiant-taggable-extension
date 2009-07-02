@@ -194,20 +194,23 @@ module TaggableTags
     </code></pre>
   }    
   tag 'tag_cloud' do |tag|
-    if tag.attr['url']
-      found = Page.find_by_url(absolute_path_for(tag.locals.page.url, tag.attr['url']))
-      tag.locals.page = found if page_found?(found)
+    
+    unless tag.locals.tags
+      if tag.attr['url']
+        found = Page.find_by_url(absolute_path_for(tag.locals.page.url, tag.attr['url']))
+        tag.locals.page = found if page_found?(found)
+      end
+      raise TagError, "tags or page must be present for tag_cloud tag" unless tag.locals.page
+      limit = tag.attr['limit'] || 50
+      tag.locals.tags = tag.locals.page.tags_for_cloud(limit)   # page.tags_for_cloud does a lot of inheritance work
     end
 
-    raise TagError, "page must be present for page:tag_cloud tag" unless tag.locals.page
-
-    limit = tag.attr['limit'] || 50
     bands = tag.attr['bands'] || 6
     destination = tag.attr['destination'] || Radiant::Config['tags.page'] || '/tags'
-    tags = tag.locals.page.tags_for_cloud(limit)
-    if tags
+    
+    if tag.locals.tags
       result = tag.double? ? "" : %{<ul class="cloud">}
-      tags.each do |t|
+      tag.locals.tags.each do |t|
         if tag.double?
           tag.locals.tag = t
           result << tag.expand
@@ -217,8 +220,6 @@ module TaggableTags
         end
       end 
       result << "</ul>" unless tag.double?
-    else
-      result = "<p>There are no tags on ''#{tag.locals.page.title}' or any of its descendants.</p>"
     end
     result
   end

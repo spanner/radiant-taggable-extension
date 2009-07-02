@@ -17,4 +17,10 @@ class TagPage < Page
     end
   end
   
+  def breadcrumb
+    bc = "tags"
+    bc << " &gt; #{self.tag.title}" if self.tag
+    bc
+  end
+  
 end
