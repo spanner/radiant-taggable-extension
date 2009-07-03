@@ -7,17 +7,19 @@ class Tag < ActiveRecord::Base
   has_many :taggings, :dependent => :destroy
   is_site_scoped if defined? ActiveRecord::SiteNotFound
 
+  # NB the inner joins mean that unused tags are omitted
+  
   named_scope :with_count, {
-    :select => "tags.*, count(taggings.id) as use_count", 
-    :joins => "LEFT JOIN taggings on taggings.tag_id = tags.id", 
+    :select => "tags.*, count(taggings.id) AS use_count", 
+    :joins => "INNER JOIN taggings ON taggings.tag_id = tags.id", 
     :group => "tags.id",
     :order => 'title ASC'
   }
   
   named_scope :most_popular, lambda { |count|
     {
-      :select => "tags.*, count(taggings.id) as use_count", 
-      :joins => "INNER JOIN taggings on taggings.tag_id = tags.id", 
+      :select => "tags.*, count(taggings.id) AS use_count", 
+      :joins => "INNER JOIN taggings ON taggings.tag_id = tags.id", 
       :group => "taggings.tag_id",
       :limit => count,
       :order => 'use_count DESC'
@@ -27,7 +29,7 @@ class Tag < ActiveRecord::Base
   named_scope :attached_to, lambda { |these|
     klass = these.first.is_a?(Page) ? Page : these.first.class
     {
-      :joins => "INNER JOIN taggings on taggings.tag_id = tags.id", 
+      :joins => "INNER JOIN taggings ON taggings.tag_id = tags.id", 
       :conditions => ["taggings.tagged_type = '#{klass}' and taggings.tagged_id IN (#{these.map{'?'}.join(',')})", *these.map{|p| p.id}],
     }
   }
@@ -46,15 +48,17 @@ class Tag < ActiveRecord::Base
   end
   
   def self.banded(tags, bands=6)
-    if tags && tags.any?
+    if tags
       count = tags.map{|t| t.use_count.to_i}
-      max_use = count.max
-      min_use = count.min
-      divisor = ((max_use - min_use) / bands) + 1
-      tags.each do |tag|
-        tag.cloud_band = (tag.use_count.to_i - min_use) / divisor
+      if count.any? # urgh. dodging named_scope count bug
+        max_use = count.max
+        min_use = count.min
+        divisor = ((max_use - min_use) / bands) + 1
+        tags.each do |tag|
+          tag.cloud_band = (tag.use_count.to_i - min_use) / divisor
+        end
+        tags
       end
-      tags
     end
   end
     

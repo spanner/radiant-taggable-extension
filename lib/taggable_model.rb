@@ -88,7 +88,7 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
     # probably want to show local tag importance, ie prominence within that list.
     
     def tags_for_cloud(limit=50, bands=6)
-      tags = self.respond_to?(:children) ? Tag.attached_to(self.with_children).most_popular(limit) : self.attached_tags.most_popular(limit)
+      tags = Tag.attached_to(self.with_children).most_popular(limit)
       Tag.banded(tags, bands)
     end
     

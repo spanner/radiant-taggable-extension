@@ -294,9 +294,12 @@ private
   end
 
   def _get_tag(tag, options)
-    tag.locals.tag ||= tag.locals.page.tag if tag.locals.page.is_a?(TagPage)
-    raise TagError, "No tag found: perhaps a 'title' attribute is required?" unless tag.locals.tag || title = options.delete('title') || id = options.delete('id')
-    tag.locals.tag || Tag.find_by_title(title) || Tag.find(id)
+    if title = options.delete('title')
+      tag.locals.tag ||= Tag.find_by_title(title)
+    end
+    if tag.locals.page.is_a?(TagPage)
+      tag.locals.tag ||= tag.locals.page.tag 
+    end
   end
   
   def _get_tags(tag)
