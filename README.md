@@ -23,7 +23,7 @@ The **TagPage** page type is just a handy way of catching tag parameters: any pa
 	/archive/tags/lasagne
 	/archive/tags/butterfly
 	
-and the right tag will be retrieved, if it exists, and made available to the page. In a future version we will do the right thing with a list of tags but for now only the first one is used.
+and the right tag will be retrieved, if it exists, and made available to the page. In a future version we will do the right thing with a list of tags but for now only the first one is noticed.
 
 ## Radius tags
 
@@ -43,7 +43,7 @@ currently only populated in a tag cloud:
 	<r:tag:use_count />
 	<r:tag:cloud_band />
 
-and only really useful in a TagPage:
+and only really useful on a TagPage:
 
 	<r:if_tag>...</r:if_tag>
 	<r:unless_tag>...</r:unless_tag>
@@ -101,17 +101,15 @@ The next job here is to bring the page-tagging out into a more visible place and
 	
 ## Status 
 
-New and probably fragile. The underlying code is fairly well broken-in and has been in production for a couple of years, but I've rearranged it quite drastically and the interface stuff is all new.
+New and possibly fragile. The underlying code is fairly well broken-in and has been in production for a couple of years, but I've rearranged it quite drastically and the interface stuff is all new.
 
 Lots of functionality has been removed from this version so that I can refactor it. Some of that will appear in `paperclipped_taggable`, some in here, some in other extensions.
 
-## Warnings
-
-* No tests yet. Expect silly mistakes.
+There are basic tests now: not detailed with with reasonable coverage. Silly mistakes are getting less likely.
 
 ## Requirements
 
-* Radiant 0.7.x. Probably fine with 0.8.0: haven't tried yet.
+* Radiant 0.7.x or 0.8.0
 
 ## Installation
 
