@@ -71,9 +71,9 @@ Put this in your layout:
 	  </ul>
 	</r:if_tags>
 
-### To display a tag cloud:
+### To create a destination page for tag links:
 
-Create a page at (say) /tags. Give it the TagPage type and this body:
+Create a page at (say) /archive/tags. Give it the TagPage type and this body:
 
 	<h1>Tag: <r:tag:name /></h1>
 	<p><r:tag:description /></p>
@@ -83,9 +83,15 @@ Create a page at (say) /tags. Give it the TagPage type and this body:
 	  </r:tag:pages:each>
 	</ul>
 
-Include the sample tagcloud.css in your styles and put a tag cloud somewhere on a page. By default it will show tags for the current page and its descendants, so you probably want to tell it to show the whole site:
+### To display a tag cloud:
 
-	<r:tag_cloud url="/" destination="/tags" />
+Include the sample tagcloud.css in your styles and put this somewhere on a page:
+
+	<r:tag_cloud />
+
+By default it will show tags for the current page and its descendants, so you may want to tell it to show the whole site:
+
+	<r:tag_cloud url="/" destination="/archive/tags" />
 
 Seek venture capital immediately.
 

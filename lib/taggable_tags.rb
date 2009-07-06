@@ -298,7 +298,7 @@ private
       tag.locals.tag ||= Tag.find_by_title(title)
     end
     if tag.locals.page.is_a?(TagPage)
-      tag.locals.tag ||= tag.locals.page.tag 
+      tag.locals.tag ||= tag.locals.page.requested_tag 
     end
   end
   

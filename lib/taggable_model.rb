@@ -63,9 +63,7 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
     end
     
     def keywords=(somewords="")
-      tags = Tag.from_list(somewords)
-      self.attached_tags.each { |tag| self.attached_tags.delete(tag) unless tags.include?(tag) }
-      tags.each { |tag| self.attached_tags << tag unless self.attached_tags.include?(tag) }
+      self.attached_tags = Tag.from_list(somewords)
     end
     
     def keywords_before_type_cast   # ugh! but necessary for form_helper

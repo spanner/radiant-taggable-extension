@@ -2,7 +2,7 @@ class TagPage < Page
 
   description %{ Takes a tag name in child position so that tagged items can be listed. }
 
-  attr_accessor :tag
+  attr_accessor :requested_tag, :requested_tags
   
   def find_by_url(url, live = true, clean = false)
     url = clean_url(url) if clean
@@ -10,7 +10,8 @@ class TagPage < Page
     @tags = tagtitles.select{|t| !t.blank? }.map{ |t| Tag.find_by_title(CGI.unescape(t)) }
     if @tags.any?
       # for now:
-      self.tag = @tags.first
+      self.requested_tag = @tags.first
+      self.requested_tags = @tags
       self
     else
       super
@@ -18,9 +19,11 @@ class TagPage < Page
   end
   
   def breadcrumb
-    bc = "tags"
-    bc << " &gt; #{self.tag.title}" if self.tag
-    bc
+    if self.requested_tag
+      %{<a href="#{self.url}">#{self.breadcrumb}</a> &gt; #{self.requested_tag.title}}
+    else
+      super
+    end
   end
   
 end

@@ -34,6 +34,10 @@ class Tag < ActiveRecord::Base
     }
   }
   
+  def tagged
+    taggings.map {|t| t.tagged}
+  end
+  
   def self.sited?
     !reflect_on_association(:site).nil?
   end
@@ -47,7 +51,7 @@ class Tag < ActiveRecord::Base
     self.sited? ? self.find_or_create_by_title_and_site_id(title, Page.current_site.id) : self.find_or_create_by_title(title)
   end
   
-  def self.banded(tags, bands=6)
+  def self.banded(tags=Tag.most_popular(1000), bands=6)
     if tags
       count = tags.map{|t| t.use_count.to_i}
       if count.any? # urgh. dodging named_scope count bug

@@ -15,25 +15,20 @@
         %th.modify{:colspan =>"2"} Modify
 
     %tbody
-      - unless @tags.empty?
-        - for tag in @tags 
-          %tr.node.level-1
-            %td.tag-title
-              = link_to tag.title, edit_admin_tag_url(:id => tag.id) 
-            %td.tag-description
-              = tag.description
-            %td.tag-usage
-              - if tag.use_count.to_i > 0
-                = tag.use_count
-                = pluralize(tag.use_count.to_i, 'item')
-              - else
-                \-
-            %td.remove
-              = link_to image_tag('admin/remove.png', :alt => 'Remove Asset'), admin_tag_url(tag), :method => 'delete'
-      - else
-        %tr
-          %td.note{ :colspan => "4" } 
-            No tags here sir.
+      - for tag in @tags 
+        %tr.node.level-1
+          %td.tag-title
+            = link_to tag.title, edit_admin_tag_url(:id => tag.id) 
+          %td.tag-description
+            = tag.description
+          %td.tag-usage
+            - if tag.use_count.to_i > 0
+              = tag.use_count
+              = pluralize(tag.use_count.to_i, 'item')
+            - else
+              \-
+          %td.remove
+            = link_to image_tag('admin/remove.png', :alt => 'Remove Asset'), admin_tag_url(tag), :method => 'delete'
  
 %p
   = link_to image_tag('admin/new-tag.png', :alt => 'New Tag'), new_admin_tag_url
