@@ -1,0 +1,31 @@
+- content_for :page_css do
+  :sass 
+    div#p_header
+      :width 99%
+      div#p_title
+        :width 70%
+        :float left
+      div#p_keywords
+        :width 28%
+        :float right
+    div#content 
+      .form-area 
+        .keywords 
+          .textbox
+            :font-family Georgia, Palatino, "Times New Roman", Times, serif
+            :font-size 200%
+            :width 100%
+            :color #c00
+
+- fields_for :page, @page do |fields|
+  #p_header
+    #p_title
+      %p.title
+        %label{:for=>"page_title"}
+          Page Title
+        = fields.text_field :title, :class => 'textbox', :maxlength => 255
+    #p_keywords
+      %p.keywords
+        %label{:for=>"page_keywords"}
+          Tags
+        = fields.text_field :keywords, :class => 'textbox'

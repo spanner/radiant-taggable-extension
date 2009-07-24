@@ -66,10 +66,11 @@ class Tag < ActiveRecord::Base
     end
   end
     
-  def self.addTaggableMethodsTo(classname)
+  def self.define_class_retrieval_methods(classname)
     Tagging.send :named_scope, "of_#{classname.downcase.pluralize}".intern, :conditions => { :tagged_type => classname.to_s }
     define_method("#{classname.downcase}_taggings") { self.taggings.send "of_#{classname.downcase.pluralize}".intern }
     define_method("#{classname.downcase.pluralize}") { self.send("#{classname.to_s.downcase}_taggings".intern).map{|l| l.tagged} }
+    # this is less efficient that pages.count, but occasionally useful in a chain where we have a complicated select clause
     define_method("#{classname.downcase.pluralize}_count") { self.send("#{classname.to_s.downcase}_taggings".intern).length }
   end
       
