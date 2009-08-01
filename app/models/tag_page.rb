@@ -20,7 +20,7 @@ class TagPage < Page
   
   def breadcrumb
     if self.requested_tag
-      %{<a href="#{self.url}">#{self.breadcrumb}</a> &gt; #{self.requested_tag.title}}
+      %{<a href="#{self.url}">#{self.title}</a> &gt; #{self.requested_tag.title}}
     else
       super
     end

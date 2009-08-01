@@ -14,7 +14,7 @@ This extension differs in a few ways that matter to me but may not to you:
 * Or any of the tagging libraries: it only takes a few named_scope calls
 * it's multi-site compatible: if our fork is installed then you get site-scoped tags and taggings.
 
-When you first install the extension you shouldn't see much difference: all we do out of the box is take over the keywords field in the page-edit view.
+When you first install the extension you shouldn't see much difference: all we do out of the box is take over (and make more prominent) the keywords field in the page-edit view.
 
 ## Tag pages
 
@@ -97,7 +97,7 @@ Seek venture capital immediately.
 
 ## Next steps
 
-The next job here is to bring the page-tagging out into a more visible place and add an auto-completer to improve tagging consistency, but before that I need to bring `paperclipped_taggable` up to date.
+The next job here is to bring the page-tagging out into a more visible place and add an auto-completer to improve tagging consistency.
 	
 ## Status 
 
@@ -105,7 +105,7 @@ New and possibly fragile. The underlying code is fairly well broken-in and has b
 
 Lots of functionality has been removed from this version so that I can refactor it. Some of that will appear in `paperclipped_taggable`, some in here, some in other extensions.
 
-There are basic tests now: not detailed with with reasonable coverage. Silly mistakes are getting less likely.
+There are basic tests now: not detailed but with reasonable coverage. Silly mistakes are getting less likely.
 
 ## Requirements
 
