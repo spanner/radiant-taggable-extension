@@ -101,9 +101,7 @@ The next job here is to bring the page-tagging out into a more visible place and
 	
 ## Status 
 
-New and possibly fragile. The underlying code is fairly well broken-in and has been in production for a couple of years, but I've rearranged it quite drastically and the interface stuff is all new.
-
-Lots of functionality has been removed from this version so that I can refactor it. Some of that will appear in `paperclipped_taggable`, some in here, some in other extensions.
+New and still a bit of a moving target. The underlying code is fairly well broken-in and has been in production for a couple of years, but I've rearranged it quite drastically and the interface stuff is all new. Right now I'm busy working on the retrieval functions: getting back all the pages, images and other assets for a supplied set of tags. There will follow a set of examples that should make all this a lot more useable.
 
 There are basic tests now: not detailed but with reasonable coverage. Silly mistakes are getting less likely.
 
