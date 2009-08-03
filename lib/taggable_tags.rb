@@ -495,11 +495,10 @@ private
       tag.locals.page.requested_tags
     elsif tag.locals.page
       tag.locals.page.attached_tags
+    else
+      []
     end
-    raise TagError, "need at least a page to get some tags from" if tags.nil?
     tags = tags.uniq.select{|t| !t.nil? }
-    raise TagError, "can't find any tags" if tags.empty?
-    tags
   end  
   
 end

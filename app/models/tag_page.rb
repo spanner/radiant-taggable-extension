@@ -12,10 +12,13 @@ class TagPage < Page
   
   def add_request_tags(tags=[])
     if tags.any?
-      self.requested_tags = [] unless self.requested_tags
       tags.collect! { |tag| tag.is_a?(Tag) ? tag : Tag.find_by_title(Rack::Utils::unescape(tag)) }
       self.requested_tags = (self.requested_tags + tags).uniq
     end
+  end
+  
+  def requested_tags
+    @requested_tags ||= []
   end
   
 end
