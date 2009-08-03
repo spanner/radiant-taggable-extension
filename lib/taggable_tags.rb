@@ -189,6 +189,7 @@ module TaggableTags
   }
   tag 'tags' do |tag|
     raise TagError, "page must be defined for tags tag" unless tag.locals.page
+    tag.locals.strict = tag.attr.delete('strict') || (tag.locals.page.is_a?(TagPage) && tag.locals.page.strict_match)
     tag.locals.tags ||= _get_tags(tag)
     tag.expand
   end
@@ -207,7 +208,7 @@ module TaggableTags
   tag 'tags:summary' do |tag|
     raise TagError, "tags must be defined for tags tag" unless tag.locals.tags
     options = tag.attr.dup
-    conjunction = options['strict'].nil? ? ' or ' : ' and '
+    conjunction = tag.locals.strict ? ' and ' : ' or '
     tag.locals.tags.map { |t|
       tag.locals.tag = t
       tag.render('tag:link', options.dup)
@@ -236,14 +237,14 @@ module TaggableTags
     If we can see a 'strict' parameter, only pages tagged with all the specified tags are shown.
     
     *Usage:* 
-    <pre><code><r:tags:pages:each>...</r:tags:pages:each></code></pre>
+    <pre><code><r:tagged_pages:each>...</r:tagged_pages:each></code></pre>
   }
-  tag 'tags:pages' do |tag|
-    raise TagError, "tags must be defined for tags:pages tag" unless tag.locals.tags
-    tag.locals.pages = Page.from_tags(tag.locals.tags)
+  tag 'tagged_pages' do |tag|
+    raise TagError, "tags must be defined to use any tagged_pages tag" unless tag.locals.tags
+    tag.locals.pages = tag.locals.strict ? Page.from_all_tags(tag.locals.tags) : Page.from_tags(tag.locals.tags)
     tag.expand
   end
-  tag 'tags:pages:each' do |tag|
+  tag 'tagged_pages:each' do |tag|
     result = []
     tag.locals.pages.each do |page|
       tag.locals.page = page
@@ -256,9 +257,9 @@ module TaggableTags
     Renders the contained elements only if there are any pages associated with the current tags.
 
     *Usage:* 
-    <pre><code><r:tags:pages:if_any>...</r:tags:pages:if_any></code></pre>
+    <pre><code><r:tagged_pages:if_any>...</r:tagged_pages:if_any></code></pre>
   }
-  tag "tags:pages:if_any" do |tag|
+  tag "tagged_pages:if_any" do |tag|
     tag.expand if tag.locals.pages.to_a.any?
   end
 
@@ -266,9 +267,9 @@ module TaggableTags
     Renders the contained elements only if there are no assets of the specified type in the current set.
 
     *Usage:* 
-    <pre><code><r:tags:pages:unless_any>...</r:tags:pages:unless_any></code></pre>
+    <pre><code><r:tagged_pages:unless_any>...</r:tagged_pages:unless_any></code></pre>
   }
-  tag "tags:pages:unless_any" do |tag|
+  tag "tagged_pages:unless_any" do |tag|
     tag.expand unless tag.locals.pages.to_a.any?
   end
   

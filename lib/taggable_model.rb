@@ -17,14 +17,23 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
       
       # note that you have to avoid anything that will call count on this scope
       # and that includes for example calling assets.empty? before there has been a find:
-      # someone has sugared empty? so that it counts rather than finding and then lengthing
+      # empty? is sugared so that it counts rather than finding and then lengthing
       named_scope :from_tags, lambda { |tags| 
         {
           :select => "#{self.table_name}.*, count(taggings.id) AS match_count", 
           :joins => "INNER JOIN taggings on taggings.tagged_id = #{self.table_name}.id AND taggings.tagged_type = '#{self.to_s}'", 
-          :conditions => ["taggings.tag_id in(#{tags.map{ '?' }.join(',')})"] + tags.map{|l| l.id},
+          :conditions => ["taggings.tag_id in(#{tags.map{ '?' }.join(',')})"] + tags.map(&:id),
           :group => "#{self.table_name}.id",
           :order => 'match_count DESC'
+        }
+      }
+
+      named_scope :from_all_tags, lambda { |tags| 
+        {
+          :select => "#{self.table_name}.*, count(taggings.id) AS match_count", 
+          :joins => "INNER JOIN taggings on taggings.tagged_id = #{self.table_name}.id AND taggings.tagged_type = '#{self.to_s}'", 
+          :conditions => ["matchcount = #{tags.length} AND taggings.tag_id in(#{tags.map{ '?' }.join(',')})"] + tags.map(&:id),
+          :group => "#{self.table_name}.id"
         }
       }
       

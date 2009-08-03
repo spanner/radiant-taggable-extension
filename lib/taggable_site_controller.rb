@@ -7,7 +7,8 @@ module TaggableSiteController      # for inclusion into SiteController
       def find_page_with_tags(url)
         page = find_page_without_tags(url)
         return page unless page.is_a?(TagPage)
-        page.add_request_tags(Tag.in_this_list(params[:tag]))
+        page.add_request_tags(Tag.in_this_list(params[:tag])) if params[:tag]
+        page.strict_match = (params[:strict] == true)
         page
       end
       alias_method_chain :find_page, :tags

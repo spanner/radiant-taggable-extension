@@ -16,23 +16,30 @@ This extension differs in a few ways that matter to me but may not to you:
 
 When you first install the extension you shouldn't see much difference: all we do out of the box is take over (and make more prominent) the keywords field in the page-edit view.
 
+## Status 
+
+New and still a bit of a moving target. The underlying code is fairly well broken-in and has been in production for a couple of years, but I've rearranged it quite drastically and the interface stuff is all new. Right now I'm busy working on the retrieval functions: getting back all the pages, images and other assets for a supplied set of tags. There will follow a set of examples that should make all this a lot more useable.
+
+There are basic tests now: not detailed but with reasonable coverage. Silly mistakes are getting less likely.
+
 ## Tag pages
 
 The **TagPage** page type is just a handy way of catching tag parameters: any path following the address of the page is taken as a slash-separated list of tags, so with a TagPage at /archive/tags you can call addresses like:
 
-	/archive/tags/lasagne
-	/archive/tags/butterfly
+	/archive/tags/lasagne/chips/pudding
 	
-and the right tag will be retrieved, if it exists, and made available to the page. In a future version we will do the right thing with a list of tags but for now only the first one is noticed.
+and the right tags will be retrieved, if they exist, and made available to the page, where you can display them using this luxurious assortment of tags:
 
 ## Radius tags
 
-The following tags are added:
+See the tag documentation for details, or have a look at the two example pages.
 
 	<r:if_tags>...</r:if_tags>
 	<r:unless_tags>...</r:unless_tags>
-	<r:tags>...</r:tags>
+	<r:tags:each>...</r:tags:each>
 	<r:tag_cloud [url=""] />
+	<r:tag_cloud all="true" />
+	
 	<r:tag:title />
 	<r:tag:description />
 	<r:tag:pages:each>...</r:tag:pages:each>
@@ -43,12 +50,13 @@ currently only populated in a tag cloud:
 	<r:tag:use_count />
 	<r:tag:cloud_band />
 
-and only really useful on a TagPage:
+and only useful on a TagPage:
 
-	<r:if_tag>...</r:if_tag>
-	<r:unless_tag>...</r:unless_tag>
+	<r:tagged_pages:if_any>...</r:tagged_pages:if_any>
+	<r:tagged_pages:unless_any>...</r:tagged_pages:unless_any>
+	<r:tagged_pages:each>...</r:tagged_pages:each>
 
-and also:
+after which you can use all the usual page tags, and also:
 
 	<r:crumbed_link />
 	
@@ -56,7 +64,7 @@ which I find useful where page names are ambiguous.
 
 ## Usage
 
-Add tags to your pages by putting a comma-separated list in the 'keywords' box. That's about to get more helpful and a lot more prominent.
+Add tags to your pages by putting a comma-separated list in the 'keywords' box. That's about to get more helpful.
 
 ### To show related pages:
 
@@ -97,14 +105,9 @@ Seek venture capital immediately.
 
 ## Next steps
 
-The next job here is to bring the page-tagging out into a more visible place and add an auto-completer to improve tagging consistency.
+* sensible display of items associated with sets of tags (for what is essentially a faceted search)
+* auto-completer to improve tagging consistency.
 	
-## Status 
-
-New and still a bit of a moving target. The underlying code is fairly well broken-in and has been in production for a couple of years, but I've rearranged it quite drastically and the interface stuff is all new. Right now I'm busy working on the retrieval functions: getting back all the pages, images and other assets for a supplied set of tags. There will follow a set of examples that should make all this a lot more useable.
-
-There are basic tests now: not detailed but with reasonable coverage. Silly mistakes are getting less likely.
-
 ## Requirements
 
 * Radiant 0.7.x or 0.8.0
