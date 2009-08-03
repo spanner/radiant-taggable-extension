@@ -19,7 +19,7 @@ describe TagPage do
     end
 
     it "should set tag context" do
-      @page.requested_tag.should == tags(:colourless)
+      @page.requested_tags.should == [tags(:colourless)]
     end
   end
   
