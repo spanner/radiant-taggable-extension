@@ -7,6 +7,14 @@ class Tag < ActiveRecord::Base
   has_many :taggings, :dependent => :destroy
   is_site_scoped if defined? ActiveRecord::SiteNotFound
 
+  # this is useful when we need to go back and add popularity to an already defined list of tags
+  
+  named_scope :in_this_list, lambda { |tags|
+    {
+      :conditions => ["tags.id IN (#{tags.map{'?'}.join(',')})", *tags.map{|t| t.is_a?(Tag) ? t.id : t}]
+    }
+  }
+  
   # NB the inner joins mean that unused tags are omitted
   
   named_scope :with_count, {
@@ -42,13 +50,17 @@ class Tag < ActiveRecord::Base
     !reflect_on_association(:site).nil?
   end
 
-  def self.from_list(list='')
+  def self.from_list(list='', or_create=true)
     return [] if list.blank?
-    list.split(/[,;]\s*/).uniq.map { |t| self.for(t) }
+    list.split(/[,;]\s*/).uniq.map { |t| self.for(t, or_create) }
   end
   
-  def self.for(title)
-    self.sited? ? self.find_or_create_by_title_and_site_id(title, Page.current_site.id) : self.find_or_create_by_title(title)
+  def self.for(title, or_create=true)
+    if or_create
+      self.sited? ? self.find_or_create_by_title_and_site_id(title, Page.current_site.id) : self.find_or_create_by_title(title)
+    else
+      self.sited? ? self.find_by_title_and_site_id(title, Page.current_site.id) : self.find_by_title(title)
+    end
   end
   
   def self.banded(tags=Tag.most_popular(1000), bands=6)
@@ -64,6 +76,11 @@ class Tag < ActiveRecord::Base
         tags
       end
     end
+  end
+  
+  def self.get_popularity_of(tags)
+    return tags if tags.empty? || tags.first.cloud_band
+    banded(in_this_list(tags).with_count)
   end
     
   def self.define_class_retrieval_methods(classname)

@@ -1,4 +1,4 @@
-module TaggablePageController      # for inclusion into Admin::PagesController
+module TaggableAdminPageController      # for inclusion into Admin::PagesController
 
   # here we have a few more special cases for page tags.
   # mostly just interface niceties
