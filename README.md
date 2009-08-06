@@ -14,7 +14,7 @@ This extension differs in a few ways that matter to me but may not to you:
 * Or any of the tagging libraries: it only takes a few named_scope calls
 * it's multi-site compatible: if our fork is installed then you get site-scoped tags and taggings.
 
-When you first install the extension you shouldn't see much difference: all we do out of the box is take over (and make more prominent) the keywords field in the page-edit view.
+When you first install the extension you shouldn't see much difference: all we do out of the box is to take over (and make more prominent) the keywords field in the page-edit view.
 
 ## New
 
@@ -22,17 +22,27 @@ When you first install the extension you shouldn't see much difference: all we d
 
 ## Status 
 
-New and still a bit of a moving target. The underlying code is fairly well broken-in and has been in production for a couple of years, but I've rearranged it quite drastically and the interface stuff is all new.
+New and still a bit of a moving target. The underlying code is fairly well broken-in and has been in production for a couple of years, but I've rearranged it quite drastically and the interface is all new.
 
-There are basic tests now: not detailed but with reasonable coverage. Silly mistakes are getting less likely.
+There are tests now: not detailed but with reasonable coverage. Silly mistakes are getting less likely.
+
+## Efficiency
+
+Not too bad, I think. The tag pages are cached and most of the heavy retrieval functions have been squashed down into single queries. Each of these:
+
+	Tag.most_popular(50)
+	Tag.coincident_with(tag1, tag2, tag3)
+	Page.related_pages
+
+is handled in a single pass.
 
 ## Tag pages
 
-The **TagPage** page type is just a handy way of catching tag parameters: any path following the address of the page is taken as a slash-separated list of tags, so with a TagPage at /archive/tags you can call addresses like:
+The **TagPage** page type is just a handy way of catching tag parameters: any path following the address of the page is taken as a slash-separated list of tags, so with a tag page at /archive/tags you can call addresses like:
 
 	/archive/tags/lasagne/chips/pudding
 	
-and the right tags will be retrieved, if they exist, and made available to the page, where you can display them using this luxurious assortment of tags:
+and the right tags will be retrieved, if they exist, and made available to the page, where you can display them using the luxurious assortment of tags below.
 
 ## Radius tags
 
@@ -103,10 +113,10 @@ To each you can append conditions:
 
 or display instructions:
 
-* **each** will loop through the set in the usual way
-* **summary** will give a sentence summarising the set
-* **list** will show an unordered list of tag links
-* **cloud** will show a tag cloud with banding based on global tag application
+* **...:each** will loop through the set in the usual way
+* **...:summary** will give a sentence summarising the set
+* **...:list** will show an unordered list of tag links
+* **...:cloud** will show a tag cloud with banding based on global tag application
 
 	<r:all_tags:list />
 	<r:requested_tags:summary />
@@ -115,9 +125,9 @@ or display instructions:
 
 or lists of associated items:
 
-* **pages:each** loops through the set of tagged pages
-* **if_pages** expands if there are any tagged pages 
-* **unless_pages** expands if there are none
+* **...:pages:each** loops through the set of tagged pages
+* **...:if_pages** expands if there are any tagged pages 
+* **...:unless_pages** expands if there are none
 
 	<r:requested_tags:pages:each>...</r:requested_tags:pages:each>
 
@@ -135,10 +145,10 @@ The form lists and links correctly all the tags you might want to add to or remo
 
 If you install the `paperclipped_taggable` extension then the set of tag-list options gets much larger:
 
-    <r:requested_tags:images:each>...</r:requested_tags:images:each>
-    <r:requested_tags:non_images:each>...</r:requested_tags:non_images:each>
-    <r:requested_tags:if_videos>...</r:requested_tags:if_videos>
-    <r:requested_tags:unless_non_images>...</r:requested_tags:unless_non_images>
+	<r:requested_tags:images:each>...</r:requested_tags:images:each>
+	<r:requested_tags:non_images:each>...</r:requested_tags:non_images:each>
+	<r:requested_tags:if_videos>...</r:requested_tags:if_videos>
+	<r:requested_tags:unless_non_images>...</r:requested_tags:unless_non_images>
 	...etc
 	
 ## Note about tag cloud banding

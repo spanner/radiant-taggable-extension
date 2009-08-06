@@ -51,6 +51,12 @@ describe Page do
       @page.related.include?(pages(:child)).should be_false
       @page.related.include?(pages(:grandchild)).should be_true
     end
+    
+    it "should have related_pages methods" do
+      @page.respond_to?(:related_pages).should be_true
+      @page.respond_to?(:closely_related_pages).should be_true
+    end
+    
   end
   
   describe "when cloud-building" do

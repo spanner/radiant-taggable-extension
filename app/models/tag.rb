@@ -130,8 +130,6 @@ class Tag < ActiveRecord::Base
     Tagging.send :named_scope, "of_#{classname.downcase.pluralize}".intern, :conditions => { :tagged_type => classname.to_s }
     define_method("#{classname.downcase}_taggings") { self.taggings.send "of_#{classname.downcase.pluralize}".intern }
     define_method("#{classname.downcase.pluralize}") { self.send("#{classname.to_s.downcase}_taggings".intern).map{|l| l.tagged} }
-    # this is less efficient that pages.count, but occasionally useful where we have a complicated select clause that can't be .counted
-    define_method("#{classname.downcase.pluralize}_count") { self.send("#{classname.to_s.downcase}_taggings".intern).length }
   end
       
 end

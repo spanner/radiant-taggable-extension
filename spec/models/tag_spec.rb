@@ -29,7 +29,6 @@ describe Tag do
     it "should have retrieval methods for taggable models" do
       @tag.respond_to?(:page_taggings).should be_true
       @tag.respond_to?(:pages).should be_true
-      @tag.respond_to?(:pages_count).should be_true
     end
     
     it "should return its list of pages" do

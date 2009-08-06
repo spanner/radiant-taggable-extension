@@ -52,6 +52,8 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
       class_eval {
         extend TaggableModel::TaggableClassMethods
         include TaggableModel::TaggableInstanceMethods
+        alias_method "related_#{self.to_s.underscore.pluralize}".intern, :related
+        alias_method "closely_related_#{self.to_s.underscore.pluralize}".intern, :closely_related
       }
     end
   end
@@ -84,18 +86,18 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
       tag = Tag.find_by_title(word) if word && !word.blank?
       self.attached_tags.delete(tag) if tag
     end
-        
+    
     def related
       self.attached_tags.empty? ? [] : self.class.from_tags(self.attached_tags) - [self]
     end
     
     def closely_related
-      self.attached_tags.empty? ? [] : self.class.from_tags(self.attached_tags).select { |p| p != self && p.match_count.to_i >= self.attached_tags.count }
+      self.attached_tags.empty? ? [] : self.class.from_all_tags(self.attached_tags) - [self]
     end
     
     def tags_for_cloud(limit=50, bands=6)
 
-      # here do we want to display local tags with global prominence?
+      # here would we want local or global prominence?
 
     end
     
