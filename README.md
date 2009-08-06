@@ -32,9 +32,12 @@ Not too bad, I think. The tag pages are cached and most of the heavy retrieval f
 
 	Tag.most_popular(50)
 	Tag.coincident_with(tag1, tag2, tag3)
-	Page.related_pages
+	Page.tagged_with(tag1, tag2, tag3)
+	Page.related_pages 								# equivalent to Page.tagged_with(self.attached_tags) - [self]
 
-is handled in a single pass.
+is handled in a single pass. 
+
+The exception is the `r:tag_cloud` tag: there we have to gather a list of descendant pages first. It's done in a fairly frugal way (by generation rather than individual) but still likely to involve several preparatory queries as well as the cloud computation.
 
 ## Tag pages
 
