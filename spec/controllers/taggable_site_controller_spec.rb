@@ -49,24 +49,49 @@ describe SiteController do
   end
 
   describe "caching" do
-    it "should add a default Cache-Control header with public and max-age of 5 minutes" do
-      get :show_page, :url => '/tags/'
-      response.headers['Cache-Control'].should =~ /public/
-      response.headers['Cache-Control'].should =~ /max-age=300/
-    end
+    describe "without tags requested" do
+      it "should add a default Cache-Control header with public and max-age of 5 minutes" do
+        get :show_page, :url => '/tags/'
+        response.headers['Cache-Control'].should =~ /public/
+        response.headers['Cache-Control'].should =~ /max-age=300/
+      end
 
-    it "should pass along the etag set by the page" do
-      get :show_page, :url => '/tags/'
-      response.headers['ETag'].should be
-    end
+      it "should pass along the etag set by the page" do
+        get :show_page, :url => '/tags/'
+        response.headers['ETag'].should be
+      end
 
-    it "should return a not-modified response when the sent etag matches" do
-      response.stub!(:etag).and_return("foobar")
-      request.if_none_match = 'foobar'
-      get :show_page, :url => '/tags/'
-      response.response_code.should == 304
-      response.body.should be_blank
+      it "should return a not-modified response when the sent etag matches" do
+        response.stub!(:etag).and_return("foobar")
+        request.if_none_match = 'foobar'
+        get :show_page, :url => '/tags/'
+        response.response_code.should == 304
+        response.body.should be_blank
+      end
     end
+    
+    describe "with tags requested" do
+      it "should add a default Cache-Control header with public and max-age of 5 minutes" do
+        get :show_page, :url => '/tags/green/furiously'
+        response.headers['Cache-Control'].should =~ /public/
+        response.headers['Cache-Control'].should =~ /max-age=300/
+      end
+
+      it "should pass along the etag set by the page" do
+        get :show_page, :url => '/tags/green/furiously'
+        response.headers['ETag'].should be
+      end
+
+      it "should return a not-modified response when the sent etag matches" do
+        response.stub!(:etag).and_return("foobar")
+        request.if_none_match = 'foobar'
+        get :show_page, :url => '/tags/green/furiously'
+        response.response_code.should == 304
+        response.body.should be_blank
+      end
+    end
+    
+    
   end
     
 end
