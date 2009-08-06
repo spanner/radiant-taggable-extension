@@ -4,10 +4,11 @@ class TagsDataset < Dataset::Base
   uses :pages
   
   def load
-    create_tag "Colourless"
-    create_tag "Ideas"
-    create_tag "Sleep"
-    create_tag "Furiously"
+    create_tag "colourless"
+    create_tag "green"
+    create_tag "ideas"
+    create_tag "sleep"
+    create_tag "furiously"
     
     apply_tag :colourless, pages(:first)
     apply_tag :ideas, pages(:first), pages(:another), pages(:grandchild)

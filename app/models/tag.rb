@@ -34,26 +34,63 @@ class Tag < ActiveRecord::Base
     }
   }
   
+  # NB. this doesn't work with a heterogeneous group. 
   named_scope :attached_to, lambda { |these|
     klass = these.first.is_a?(Page) ? Page : these.first.class
     {
       :joins => "INNER JOIN taggings ON taggings.tag_id = tags.id", 
-      :conditions => ["taggings.tagged_type = '#{klass}' and taggings.tagged_id IN (#{these.map{'?'}.join(',')})", *these.map{|p| p.id}],
+      :conditions => ["taggings.tagged_type = '#{klass}' and taggings.tagged_id IN (#{these.map{'?'}.join(',')})", *these.map(&:id)],
     }
   }
+  
+  # Standardises formatting of tag name in urls
+  
+  def clean_title
+    Rack::Utils.escape(title)
+  end
+  
+  # Returns a list of all the objects tagged with this tag. We can't do this in SQL because it's polymorphic (and has_many_polymorphs makes my skin itch)
   
   def tagged
     taggings.map {|t| t.tagged}
   end
   
+  # Returns a list of all the tags that have been applied alongside this one.
+  
+  def coincident_tags
+    tags = []
+    self.tagged.each do |t|
+      tags += t.attached_tags 
+    end
+    tags.uniq - [self]
+  end
+  
+  # Returns a list of all the tags that have been applied alongside _all_ of the supplied tags.
+  # used for faceting on tag pages
+  
+  def self.coincident_with(tags)
+    related_tags = []
+    tagged = Tagging.with_all_of_these(tags).map(&:tagged)
+    tagged.each do |t|
+      related_tags += t.attached_tags 
+    end
+    related_tags.uniq - tags
+  end
+  
+  # returns true if tags are site-scoped
+  
   def self.sited?
     !reflect_on_association(:site).nil?
   end
+  
+  # turns a comma-separate string of tag titles into a list of tag objects, creating where necessary
 
   def self.from_list(list='', or_create=true)
     return [] if list.blank?
     list.split(/[,;]\s*/).uniq.map { |t| self.for(t, or_create) }
   end
+  
+  # finds or creates a tag with the supplied title
   
   def self.for(title, or_create=true)
     if or_create
@@ -62,6 +99,8 @@ class Tag < ActiveRecord::Base
       self.sited? ? self.find_by_title_and_site_id(title, Page.current_site.id) : self.find_by_title(title)
     end
   end
+  
+  # applies the usual cloud-banding algorithm to a set of tags with use_count
   
   def self.banded(tags=Tag.most_popular(1000), bands=6)
     if tags
@@ -78,16 +117,20 @@ class Tag < ActiveRecord::Base
     end
   end
   
+  # takes a list of tags and reaquires it from the database, this time with incidence.
+  
   def self.get_popularity_of(tags)
     return tags if tags.empty? || tags.first.cloud_band
     banded(in_this_list(tags).with_count)
   end
-    
+  
+  # adds retrieval methods for a taggable class to this class and to Tagging.
+  
   def self.define_class_retrieval_methods(classname)
     Tagging.send :named_scope, "of_#{classname.downcase.pluralize}".intern, :conditions => { :tagged_type => classname.to_s }
     define_method("#{classname.downcase}_taggings") { self.taggings.send "of_#{classname.downcase.pluralize}".intern }
     define_method("#{classname.downcase.pluralize}") { self.send("#{classname.to_s.downcase}_taggings".intern).map{|l| l.tagged} }
-    # this is less efficient that pages.count, but occasionally useful in a chain where we have a complicated select clause
+    # this is less efficient that pages.count, but occasionally useful where we have a complicated select clause that can't be .counted
     define_method("#{classname.downcase.pluralize}_count") { self.send("#{classname.to_s.downcase}_taggings".intern).length }
   end
       

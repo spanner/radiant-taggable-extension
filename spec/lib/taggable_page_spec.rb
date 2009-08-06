@@ -12,7 +12,7 @@ describe Page do
   end
   
   it "should return a weighted list of tags from page list" do
-    Page.tags_for_cloud_from([pages(:first)]).should == Tag.from_list("Colourless, Ideas, Sleep, Furiously")
+    Page.tags_for_cloud_from([pages(:first)]).should == Tag.from_list("colourless, ideas, sleep, furiously")
   end
   
   describe "instantiated with tags" do
@@ -21,19 +21,19 @@ describe Page do
     end
     
     it "should return tag list" do
-      @page.attached_tags.should == Tag.from_list("Colourless, Ideas, Sleep, Furiously")
+      @page.attached_tags.should == Tag.from_list("colourless, ideas, sleep, furiously")
     end
     
     it "should add and remove tags" do
-      @page.add_tag("Howdy")
-      @page.attached_tags.should == Tag.from_list("Colourless, Ideas, Sleep, Furiously, Howdy")
-      @page.remove_tag("Howdy")
-      @page.attached_tags.should == Tag.from_list("Colourless, Ideas, Sleep, Furiously")
+      @page.add_tag("howdy")
+      @page.attached_tags.should == Tag.from_list("colourless, ideas, sleep, furiously, howdy")
+      @page.remove_tag("howdy")
+      @page.attached_tags.should == Tag.from_list("colourless, ideas, sleep, furiously")
       Tag.for('Howdy').pages.include?(@page).should be_false
     end
 
     it "should return tags string as keywords" do
-      @page.keywords.should == "Colourless, Ideas, Sleep, Furiously"
+      @page.keywords.should == "colourless, ideas, sleep, furiously"
     end
 
     it "should accept tags string as keywords=" do
@@ -43,7 +43,7 @@ describe Page do
     end
 
     it "should return keywords string to keywords_before_type_cast (for form helpers)" do
-      @page.keywords_before_type_cast.should == "Colourless, Ideas, Sleep, Furiously"
+      @page.keywords_before_type_cast.should == "colourless, ideas, sleep, furiously"
     end
     
     it "should return a list of related pages" do

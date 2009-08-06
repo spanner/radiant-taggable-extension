@@ -20,27 +20,33 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
       # empty? is sugared so that it counts rather than finding and then lengthing
       named_scope :from_tags, lambda { |tags| 
         {
-          :select => "#{self.table_name}.*, count(taggings.id) AS match_count", 
           :joins => "INNER JOIN taggings on taggings.tagged_id = #{self.table_name}.id AND taggings.tagged_type = '#{self.to_s}'", 
           :conditions => ["taggings.tag_id in(#{tags.map{ '?' }.join(',')})"] + tags.map(&:id),
-          :group => "#{self.table_name}.id",
-          :order => 'match_count DESC'
+          :group => "taggings.tagged_id",
+          :order => "count(taggings.id) DESC"
         }
       }
 
       named_scope :from_all_tags, lambda { |tags| 
         {
-          :select => "#{self.table_name}.*, count(taggings.id) AS match_count", 
           :joins => "INNER JOIN taggings on taggings.tagged_id = #{self.table_name}.id AND taggings.tagged_type = '#{self.to_s}'", 
-          :conditions => ["matchcount = #{tags.length} AND taggings.tag_id in(#{tags.map{ '?' }.join(',')})"] + tags.map(&:id),
-          :group => "#{self.table_name}.id"
+          :conditions => ["taggings.tag_id in(#{tags.map{ '?' }.join(',')})"] + tags.map(&:id),
+          :group => "#{self.table_name}.id",
+          :having => "count(taggings.id) >= #{tags.length}"
         }
-      }
+      } do
+        # count is badly sugared here: it omits the group and having clauses.
+        # length performs the query and looks at the array: less neat, but more right
+        # this gives us back any? and empty? as well.
+        def count
+          length
+        end
+      end
       
-      # this sets up eg Taggings.of_page
+      # this sets up eg Taggings.of_model
       # and then uses that to define instance methods in Tag:
-      # tag.pages
-      # tag.pages_count
+      # tag.models
+      # tag.models_count
       Tag.define_class_retrieval_methods(self.to_s)
       
       class_eval {
