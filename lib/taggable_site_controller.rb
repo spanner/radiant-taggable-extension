@@ -9,10 +9,7 @@ module TaggableSiteController      # for inclusion into SiteController
         page = find_page_without_tags(url)
         return page unless page.is_a?(TagPage)
         page.add_request_tags(Tag.in_this_list(params[:tag])) if params[:tag]      
-
-        logger.warn "!!  page.tagged_url is #{page.tagged_url} and url is #{url}"
-        
-        raise TagPage::RedirectRequired, page.tagged_url unless page.tagged_url == url     # to handle removal of tags and tidy up addressing
+        raise TagPage::RedirectRequired, page.tagged_url unless page.tagged_url == url     # to handle removal of tags and ensure consistent addressing. should also allow cache hit.
         page
       end
       alias_method_chain :find_page, :tags
