@@ -351,13 +351,11 @@ module TaggableTags
     options = tag.attr.dup
     result = []
     requested_tags = _get_requested_tags(tag)
-    logger.warn ">>  requested_tags are #{requested_tags.inspect}"
     if requested_tags.any?
       result << %{<h4>remove a tag</h4>}
       result << %{<ul class="requested">}
       requested_tags.each do |t|
         tag.locals.tag = t
-        logger.warn ">>  calling unlink with tag #{tag.locals.tag.inspect}"
         result << %{<li>#{tag.render('tag:unlink')}</li>}
       end
       result << %{</ul>}
@@ -542,10 +540,7 @@ module TaggableTags
     *Usage:* 
     <pre><code><r:tag [title="tag_title"]>...</r:tag></code></pre>
   }    
-  tag 'tag' do |tag|
-    
-    logger.warn ">> in tag tag, tag is #{tag.locals.tag.inspect}"
-    
+  tag 'tag' do |tag|    
     tag.locals.tag ||= _get_tag(tag, tag.attr.dup)
     tag.expand
   end
