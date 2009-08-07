@@ -144,7 +144,7 @@ module TaggableTags
       tag.expand
     end
     tag "#{these}_tags:pages:each" do |tag|
-      tag.render('pages:each', tag.attr.dup, &tag.block) 
+      tag.render('page_list', tag.attr.dup, &tag.block) 
     end
 
     desc %{
@@ -448,9 +448,23 @@ module TaggableTags
   
   ################# tagged pages. Other extensions define similar tags for eg tagged assets.
   
+  # general purpose pages lister
+  
+  desc %{
+    This is a general purpose page lister. It wouldn't normally be accessed directly but a lot of other tags make use of it.
+  }
+  tag 'page_list' do |tag|
+    raise TagError, "no pages for page_list" unless tag.locals.pages
+    result = []
+    tag.locals.pages.each do |page|
+      tag.locals.page = page
+      result << tag.expand
+    end 
+    result
+  end
+  
   desc %{
     Lists all the pages associated with a set of tags, in descending order of relatedness.
-    If we can see a 'strict' parameter, only pages tagged with all the specified tags are shown.
     
     *Usage:* 
     <pre><code><r:tags:pages:each>...</r:tags:pages:each></code></pre>

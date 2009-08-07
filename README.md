@@ -132,6 +132,8 @@ or lists of associated items:
 * **...:if_pages** expands if there are any tagged pages 
 * **...:unless_pages** expands if there are none
 
+eg.
+
 	<r:requested_tags:pages:each>...</r:requested_tags:pages:each>
 
 within that you can use all the usual page tags, and also:
