@@ -1,7 +1,9 @@
 require 'digest/sha1'
 
 class TagsDataset < Dataset::Base
-  uses :pages
+  datasets = [:pages]
+  datasets << :tag_sites if defined? Site
+  uses *datasets
   
   def load
     create_tag "colourless"
@@ -27,6 +29,7 @@ class TagsDataset < Dataset::Base
       attributes = { 
         :title => title
       }.merge(attributes)
+      attributes[:site] = sites(:test) if defined? Site
       attributes
     end
         
