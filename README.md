@@ -19,6 +19,7 @@ When you first install the extension you shouldn't see much difference: all we d
 ## New
 
 * faceted retrieval by combining tags.
+* navigation submenu (requires submenu extension)
 
 ## Status 
 

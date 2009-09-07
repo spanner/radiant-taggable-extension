@@ -1,12 +1,23 @@
-.form-area
-  %p.title
-    = form.label :title
-    = form.text_field :title, :class => 'textbox', :maxlength => 255
-  %div
-    = form.label :description
-    = form.text_area :description, :class => "textarea", :style => "width: 100%"
-  %p.buttons
-    = save_model_button(@tag)
-    = save_model_and_continue_editing_button(@tag)
-    or
-    = link_to "Cancel", admin_tags_url
+= render_region :form_top
+- render_region :form do |form_region|
+  .form-area
+    - form_region.edit_name do
+      %p.title
+        = form.label :title
+        = form.text_field :title, :class => 'textbox', :maxlength => 255
+
+    - form_region.edit_description do
+      %div
+        = form.label :description
+        = form.text_area :description, :class => "textarea", :style => "width: 100%"
+
+- render_region :form_bottom do |form_bottom_region|
+  - form_bottom_region.edit_timestamp do
+    = updated_stamp @tag  
+
+  - form_bottom_region.edit_buttons do
+    %p.buttons
+      = save_model_button(@tag)
+      = save_model_and_continue_editing_button(@tag)
+      or
+      = link_to "Cancel", admin_tags_url

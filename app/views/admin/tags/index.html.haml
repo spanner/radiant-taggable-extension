@@ -1,40 +1,54 @@
 - include_stylesheet 'admin/tags'
+= render_region :top 
 
-%h1 Tag list
+%h1 
+  Tag list
+%p 
+  Tags are most easy to define while you edit something - just type in a name - but you can also use this page to add, edit and tidy the set.
 
-%p
-  = link_to "view as cloud &rarr;", cloud_admin_tags_url
-    
 #tags_table
   %table{ :class => "index", :cellpadding => "0", :cellspacing => "0", :border => "0"}
     %thead
       %tr
-        %th.tag-title Title
-        %th.tag-description Description
-        %th.tag-usage Usage
-        %th.modify{:colspan =>"2"} Modify
+        - render_region :thead do |thead|
+          - thead.title_header do
+            %th.tag-title Title
+          - thead.description_header do
+            %th.tag-description Description
+          - thead.usage_header do
+            %th.tag-usage Usage
+          - thead.modify_header do
+            %th.modify{:colspan =>"2"} Modify
 
     %tbody
       - for tag in @tags 
         %tr.node.level-1
-          %td.tag-title
-            = link_to tag.title, edit_admin_tag_url(:id => tag.id) 
-          %td.tag-description
-            = tag.description
-          %td.tag-usage
-            - if tag.use_count.to_i > 0
-              = tag.use_count
-              = pluralize(tag.use_count.to_i, 'item')
-            - else
-              \-
-          %td.remove
-            = link_to image_tag('admin/remove.png', :alt => 'Remove Asset'), admin_tag_url(tag), :method => 'delete'
- 
-%p
-  = link_to image_tag('admin/new-tag.png', :alt => 'New Tag'), new_admin_tag_url
+          - render_region :tbody do |tbody|
+            - tbody.title_cell do
+              %td.tag-title
+                = link_to tag.title, edit_admin_tag_url(:id => tag.id) 
 
-%p 
-  Tags are most easy to define while you edit something - just type in a name - but you can also use this page to add, edit and tidy the set.
+            - tbody.description_cell do
+              %td.tag-description
+                = tag.description
+                
+            - tbody.usage_cell do
+              %td.tag-usage
+                - if tag.use_count.to_i > 0
+                  = tag.use_count
+                  = pluralize(tag.use_count.to_i, 'item')
+                - else
+                  \-
+
+            - tbody.modify_cell do
+              %td.remove
+                = link_to image_tag('admin/remove.png', :alt => 'Remove Asset'), admin_tag_url(tag), :method => 'delete'
+ 
+- render_region :bottom do |bottom|
+  - bottom.new_button do
+    %p
+      = link_to image_tag('admin/new-tag.png', :alt => 'New Tag'), new_admin_tag_url
+
    
 %script{ :type => "text/javascript"}
   // <! [CDATA[

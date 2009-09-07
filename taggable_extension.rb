@@ -19,7 +19,19 @@ class TaggableExtension < Radiant::Extension
     TagPage                                                             # page type that reads tags from url
     SiteController.send :include, TaggableSiteController                # and from tag[] parameters
 
+    unless defined? admin.tag
+      Radiant::AdminUI.send :include, TaggableAdminUI
+      admin.tag = Radiant::AdminUI.load_default_tag_regions
+      if defined? Site
+        admin.tag.index.add :top, "admin/shared/site_jumper"
+      end
+    end
+
     admin.tabs.add "Tags", "/admin/tags", :after => "Layouts", :visibility => [:all]
+    admin.tabs['Tags'].add_link('tag list', '/admin/tags')
+    admin.tabs['Tags'].add_link('tag cloud', '/admin/tags/cloud')
+    admin.tabs['Tags'].add_link('new tag', '/admin/tags/new')
+    
   end
   
   def deactivate
