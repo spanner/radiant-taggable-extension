@@ -60,7 +60,7 @@ class Tag < ActiveRecord::Base
   def coincident_tags
     tags = []
     self.tagged.each do |t|
-      tags += t.attached_tags 
+      tags += t.attached_tags if t
     end
     tags.uniq - [self]
   end
@@ -72,7 +72,7 @@ class Tag < ActiveRecord::Base
     related_tags = []
     tagged = Tagging.with_all_of_these(tags).map(&:tagged)
     tagged.each do |t|
-      related_tags += t.attached_tags 
+      related_tags += t.attached_tags if t
     end
     related_tags.uniq - tags
   end
