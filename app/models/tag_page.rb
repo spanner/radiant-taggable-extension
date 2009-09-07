@@ -9,8 +9,11 @@ class TagPage < Page
   attr_accessor :requested_tags, :strict_match
   
   def find_by_url(url, live = true, clean = false)
+    logger.warn ">>  #{self}.find_by_url (#{url})"
     url = clean_url(url) if clean
-    tags = (url.gsub(/^#{ self.url }\/?/, '').split('/'))
+    my_url = self.url
+    return false unless url =~ /^#{Regexp.quote(my_url)}(.*)/
+    tags = $1.split('/')
     remove_tags, add_tags = tags.partition{|t| t.first == '-'}
     add_request_tags(add_tags)
     remove_request_tags(remove_tags)
