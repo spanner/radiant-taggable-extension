@@ -28,10 +28,11 @@ class TaggableExtension < Radiant::Extension
     end
 
     admin.tabs.add "Tags", "/admin/tags", :after => "Layouts", :visibility => [:all]
-    admin.tabs['Tags'].add_link('tag list', '/admin/tags')
-    admin.tabs['Tags'].add_link('tag cloud', '/admin/tags/cloud')
-    admin.tabs['Tags'].add_link('new tag', '/admin/tags/new')
-    
+    if admin.tabs['Tags'].respond_to?(:add_link)
+      admin.tabs['Tags'].add_link('tag list', '/admin/tags')
+      admin.tabs['Tags'].add_link('tag cloud', '/admin/tags/cloud')
+      admin.tabs['Tags'].add_link('new tag', '/admin/tags/new')
+    end
   end
   
   def deactivate
