@@ -15,20 +15,20 @@ class Tag < ActiveRecord::Base
     }
   }
   
-  # NB the inner joins mean that unused tags are omitted
+  # NB unused tags are omitted
   
   named_scope :with_count, {
-    :select => "tags.*, count(taggings.id) AS use_count", 
-    :joins => "INNER JOIN taggings ON taggings.tag_id = tags.id", 
+    :select => "tags.*, count(tt.id) AS use_count", 
+    :joins => "INNER JOIN taggings as tt ON tt.tag_id = tags.id", 
     :group => "tags.id",
     :order => 'title ASC'
   }
   
   named_scope :most_popular, lambda { |count|
     {
-      :select => "tags.*, count(taggings.id) AS use_count", 
-      :joins => "INNER JOIN taggings ON taggings.tag_id = tags.id", 
-      :group => "taggings.tag_id",
+      :select => "tags.*, count(tt.id) AS use_count", 
+      :joins => "INNER JOIN taggings as tt ON tt.tag_id = tags.id", 
+      :group => "tags.id",
       :limit => count,
       :order => 'use_count DESC'
     }

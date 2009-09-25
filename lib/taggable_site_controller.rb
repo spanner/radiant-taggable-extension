@@ -17,7 +17,6 @@ module TaggableSiteController      # for inclusion into SiteController
       def show_page_with_tags
         show_page_without_tags
       rescue TagPage::RedirectRequired => e
-        logger.warn "!!  redirected to #{e.message}"
         redirect_to e.message
       end
       alias_method_chain :show_page, :tags

@@ -12,7 +12,7 @@ describe Page do
   end
   
   it "should return a weighted list of tags from page list" do
-    Page.tags_for_cloud_from([pages(:first)]).should == Tag.from_list("colourless, ideas, sleep, furiously")
+    Page.tags_for_cloud_from([pages(:first)]).should == Tag.from_list("ideas, colourless, sleep, furiously")
   end
   
   describe "instantiated with tags" do
@@ -86,7 +86,7 @@ describe Page do
     it "should return a weighted list of tags attached to itself and descendants" do
       @tags.first.should == tags(:ideas)
       @tags.first.cloud_band.should_not be_nil
-      @tags.first.use_count.should == "1"           # counting only within this family tree
+      @tags.first.use_count.should == "3"           # counting only within this family tree
     end
 
   end
