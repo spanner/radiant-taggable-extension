@@ -40,6 +40,16 @@ class TagPage < Page
     @requested_tags ||= []
   end
   
+  # must return a scoped finder that can be chained
+  
+  def assets
+    if requested_tags.any?
+      Asset.from_all_tags(requested_tags)
+    else
+      Asset.all
+    end
+  end
+  
   # this isn't very pleasing but it's the best way to let the controller know 
   # of our real address once tags have been added and removed.
   
