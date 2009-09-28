@@ -252,7 +252,10 @@ module TaggableTags
       result = %{<ul class="#{listclass}">}
       tag.locals.tags.each do |t|
         tag.locals.tag = t
-        result << %{<li class="cloud_#{tag.render('tag:cloud_band')}">#{tag.render('tag:link', options)}</li>}
+        result << %{<li class="cloud_#{tag.render('tag:cloud_band')}">}
+        linktype = options.delete('unlink') ? 'unlink' : 'link'
+        result << tag.render("tag:#{linktype}", options)
+        result << %{</li>}
       end 
       result << "</ul>"
       result
@@ -316,67 +319,26 @@ module TaggableTags
                   # most can be built out of the smaller tags if you need them to work differently
 
   desc %{
-    This is essentially a filtering form: it returns a list of the selected tags, linked so that you can remove them, 
-    and a list of the available tags, linked so that you can add them. It only works on a TagPage. 
+    This is essentially a filtering form: it returns a cloud of the selected tags, linked so that you can remove them, 
+    and a cloud of related (ie subsetting) tags, linked so that you can add them. It only works on a TagPage. 
     
     You can limit the size of the available-tags list in the usual way. The default limit is 40.
     
     *Usage:* 
     <pre><code><r:tag_chooser limit="20" /></code></pre>
-    
-    The output is roughly equivalent to this:
-    
-    <pre><code>
-      <r:unless_requested_tags>
-        <h4>choose a tag</h4>
-        <r:top_tags:list limit="6" />
-      </r:unless_requested_tags>
-      <r:if_requested_tags>
-        <h4>remove a tag</h4>
-        <ul class="requested">
-          <r:requested_tags:each />
-            <r:tag:unlink />
-          </r:requested_tags:each />
-        </ul>
-        <h4>add a tag</h4>
-        <ul class="possible">
-          <r:coincident_tags:each />
-            <r:tag:link />
-          </r:coincident_tags:each />
-        </ul>
-      </r:if_requested_tags>
-    </code></pre>
   }    
   tag 'tag_chooser' do |tag|
     options = tag.attr.dup
     result = []
     requested_tags = _get_requested_tags(tag)
     if requested_tags.any?
-      result << %{<h4>remove a tag</h4>}
-      result << %{<ul class="requested">}
-      requested_tags.each do |t|
-        tag.locals.tag = t
-        result << %{<li>#{tag.render('tag:unlink')}</li>}
-      end
-      result << %{</ul>}
-      available_tags = _get_coincident_tags(tag)
-      if available_tags.any?
-        result << %{<h4>add a tag</h4>}
-        result << %{<ul class="available">}
-        available_tags.each do |t|
-          tag.locals.tag = t
-          result << %{<li>#{tag.render('tag:link')}</li>}
-        end
-        result << %{</ul>}
-      end
+      result << %{<p>Broaden your search by removing a tag:</p>}
+      result << tag.render("requested_tags:cloud", options.merge({'unlink' => true, 'listclass' => 'cloud remove_tags'}))
+      result << %{<p>Refine your search by adding another tag:</p>}
+      result << tag.render("coincident_tags:cloud", options.merge({'unlink' => false, 'listclass' => 'cloud add_tags'}))
     else
-      result << %{<h4>choose a tag</h4>}
-      result << %{<ul class="available">}
-      _get_top_tags(tag).each do |t|
-        tag.locals.tag = t
-        result << %{<li>#{tag.render('tag:link')}</li>}
-      end
-      result << %{</ul>}
+      result << %{<p>Narrow your search by choosing a tag</p>}
+      result << tag.render("all_tags:cloud")
     end
     result
   end
@@ -596,7 +558,7 @@ module TaggableTags
 
   desc %{
     Makes a link to the current tag. If the current page is a tag page, we amend the 
-    list of requested tags. Otherwise, the 'tagpage' parameter cab be the address of a 
+    list of requested tags. Otherwise, the 'tagpage' parameter can be the address of a 
     TagPage, or you can specify a global tags page with a 'tags.page' config entry.
     
     If no tagpage is specified we return a relative link to the escaped name of the tag.
@@ -636,7 +598,7 @@ module TaggableTags
     attributes = options.inject('') { |s, (k, v)| s << %{#{k.downcase}="#{v}" } }.strip
     attributes = " #{attributes}" unless attributes.empty?
     text = tag.double? ? tag.expand : tag.render('tag:name')
-
+    
     if tag.locals.page.is_a?(TagPage)
       href = tag.locals.page.tagged_url(tag.locals.page.requested_tags - [tag.locals.tag])
     elsif page_url = (options.delete('tagpage') || Radiant::Config['tags.page'])
