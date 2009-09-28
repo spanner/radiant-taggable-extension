@@ -1,6 +1,6 @@
 class Tag < ActiveRecord::Base
 
-  attr_accessor :cloud_band
+  attr_accessor :cloud_band, :cloud_size
   
   belongs_to :created_by, :class_name => 'User'
   belongs_to :updated_by, :class_name => 'User'
@@ -102,7 +102,7 @@ class Tag < ActiveRecord::Base
   
   # applies the usual cloud-banding algorithm to a set of tags with use_count
   
-  def self.banded(tags=Tag.most_popular(1000), bands=6)
+  def self.banded(tags=Tag.most_popular(100), bands=6)
     if tags
       count = tags.map{|t| t.use_count.to_i}
       if count.any? # urgh. dodging named_scope count bug
@@ -117,11 +117,38 @@ class Tag < ActiveRecord::Base
     end
   end
   
+  def self.sized(tags=Tag.most_popular(100), threshold=0, biggest=1.0, smallest=0.4)
+    logger.warn "*** sized! #{tags.map(&:title)}, #{threshold}, #{biggest}, #{smallest}"
+    if tags
+      counts = tags.map{|t| t.use_count.to_i}
+      logger.warn "*   counts #{counts.inspect}"
+
+      if counts.any? # urgh. dodging named_scope count bug
+        max = counts.max
+        min = counts.min
+        logger.warn "*   max = #{max}, min #{min}"
+        
+        steepness = Math.log(max - (min-1))/(biggest - smallest)
+        logger.warn "*   steepness = Math.log(#{max} - (#{min}-1))/(#{biggest} - #{smallest})"
+        logger.warn "*   steepness = #{steepness}"
+
+        tags.each do |tag|
+          offset = Math.log(tag.use_count.to_i - (min-1))/steepness
+          tag.cloud_size = sprintf("%.2f", smallest + offset)
+          
+          logger.warn "*   #{tag.title}.cloud_size = Math.log(#{tag.use_count.to_i} - (#{min}-1))/#{steepness}) + #{smallest}"
+          logger.warn ">   #{tag.title}.cloud_size = #{tag.cloud_size}"
+        end
+        tags
+      end
+    end
+  end
+  
   # takes a list of tags and reaquires it from the database, this time with incidence.
   
   def self.get_popularity_of(tags)
-    return tags if tags.empty? || tags.first.cloud_band
-    banded(in_this_list(tags).with_count)
+    return tags if tags.empty? || tags.first.cloud_size
+    sized(in_this_list(tags).with_count)
   end
   
   # adds retrieval methods for a taggable class to this class and to Tagging.

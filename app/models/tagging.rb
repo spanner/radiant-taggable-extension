@@ -33,7 +33,7 @@ class Tagging < ActiveRecord::Base
   # if all the taggings for a particular tag are deleted, we want to delete the tag too
   
   def before_destroy
-    tag.destroy_without_callbacks if Tagging.with_tag(tag).count < 1
+    tag.destroy_without_callbacks if Tagging.with(tag).count < 1
   end    
   
 end

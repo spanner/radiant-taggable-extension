@@ -175,9 +175,9 @@ module TaggableTags
   desc %{
     Summarises in a sentence the list of tags currently active.
 
-    <pre><code>Pages tagged with <r:page_tags:summary />:</code></pre>
-    
     *Usage:* 
+    <pre><code>Pages tagged with <r:tags:summary />:</code></pre>
+    
     And the output would be "Pages tagged with tag1, tag2 and tag3:".
   }    
   tag 'tags:summary' do |tag|
@@ -185,7 +185,7 @@ module TaggableTags
       options = tag.attr.dup
       tag.locals.tags.map { |t|
         tag.locals.tag = t
-        tag.render('tag:link', options)
+        tag.render('tag:unlink', options)
       }.to_sentence
     else
       "no tags"
@@ -252,9 +252,9 @@ module TaggableTags
       result = %{<ul class="#{listclass}">}
       tag.locals.tags.each do |t|
         tag.locals.tag = t
-        result << %{<li class="cloud_#{tag.render('tag:cloud_band')}">}
+        result << %{<li>}
         linktype = options.delete('unlink') ? 'unlink' : 'link'
-        result << tag.render("tag:#{linktype}", options)
+        result << tag.render("tag:#{linktype}", options.merge('style' => "font-size: #{t.cloud_size.to_f * 2.5}em; opacity: #{t.cloud_size};"))
         result << %{</li>}
       end 
       result << "</ul>"
@@ -594,6 +594,7 @@ module TaggableTags
   tag 'tag:unlink' do |tag|
     raise TagError, "tag must be defined for tag:unlink tag" unless tag.locals.tag
     options = tag.attr.dup
+    options['class'] ||= 'detag'
     anchor = options['anchor'] ? "##{options.delete('anchor')}" : ''
     attributes = options.inject('') { |s, (k, v)| s << %{#{k.downcase}="#{v}" } }.strip
     attributes = " #{attributes}" unless attributes.empty?
@@ -736,7 +737,11 @@ private
   def _get_coincident_tags(tag)
     raise TagError, "coincident_tags tag can only be used on a TagPage" unless tag.locals.page && tag.locals.page.is_a?(TagPage)
     tags = tag.locals.page.requested_tags
-    Tag.coincident_with(tags) if tags.any?
+    if tags.any?
+      Tag.coincident_with(tags) 
+    else
+      Tag.find(:all)
+    end
   end
   
 end
