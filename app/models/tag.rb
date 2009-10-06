@@ -117,6 +117,9 @@ class Tag < ActiveRecord::Base
     end
   end
   
+  # derived from here:
+  # http://stackoverflow.com/questions/604953/what-is-the-correct-algorthm-for-a-logarthmic-distribution-curve-between-two-poin
+  
   def self.sized(tags=Tag.most_popular(100), threshold=0, biggest=1.0, smallest=0.4)
     logger.warn "*** sized! #{tags.map(&:title)}, #{threshold}, #{biggest}, #{smallest}"
     if tags
