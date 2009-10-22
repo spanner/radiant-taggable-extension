@@ -8,6 +8,10 @@ class TagPage < Page
   
   attr_accessor :requested_tags, :strict_match
   
+  def self.sphinx_indexes
+    []
+  end
+  
   def find_by_url(url, live = true, clean = false)
     url = clean_url(url) if clean
     my_url = self.url
