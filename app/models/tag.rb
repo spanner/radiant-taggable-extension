@@ -121,26 +121,21 @@ class Tag < ActiveRecord::Base
   # http://stackoverflow.com/questions/604953/what-is-the-correct-algorthm-for-a-logarthmic-distribution-curve-between-two-poin
   
   def self.sized(tags=Tag.most_popular(100), threshold=0, biggest=1.0, smallest=0.4)
-    logger.warn "*** sized! #{tags.map(&:title)}, #{threshold}, #{biggest}, #{smallest}"
     if tags
       counts = tags.map{|t| t.use_count.to_i}
-      logger.warn "*   counts #{counts.inspect}"
-
-      if counts.any? # urgh. dodging named_scope count bug
+      if counts.any?
         max = counts.max
         min = counts.min
-        logger.warn "*   max = #{max}, min #{min}"
-        
-        steepness = Math.log(max - (min-1))/(biggest - smallest)
-        logger.warn "*   steepness = Math.log(#{max} - (#{min}-1))/(#{biggest} - #{smallest})"
-        logger.warn "*   steepness = #{steepness}"
-
-        tags.each do |tag|
-          offset = Math.log(tag.use_count.to_i - (min-1))/steepness
-          tag.cloud_size = sprintf("%.2f", smallest + offset)
-          
-          logger.warn "*   #{tag.title}.cloud_size = Math.log(#{tag.use_count.to_i} - (#{min}-1))/#{steepness}) + #{smallest}"
-          logger.warn ">   #{tag.title}.cloud_size = #{tag.cloud_size}"
+        if max == min
+          tags.each do |tag|
+            tag.cloud_size = sprintf("%.2f", biggest/2 + smallest/2)
+          end
+        else
+          steepness = Math.log(max - (min-1))/(biggest - smallest)
+          tags.each do |tag|
+            offset = Math.log(tag.use_count.to_i - (min-1))/steepness
+            tag.cloud_size = sprintf("%.2f", smallest + offset)
+          end
         end
         tags
       end

@@ -240,9 +240,8 @@ module TaggableTags
   }
   
   tag 'tags:cloud' do |tag|
-    if tag.locals.tags && tag.locals.tags.any?
+    if tag.locals.tags && tag.locals.tags.length > 1
       options = tag.attr.dup
-      Rails.logger.warn "!!! going back for cloud prep with: #{tag.locals.tags.inspect}"
       tag.locals.tags = Tag.for_cloud(tag.locals.tags).sort_by{|t| t.title.downcase}                          # nb. for_cloud immediately returns list if already sized
       listclass = options.delete('listclass') || 'cloud'
       show_checkboxes = (options.delete('checkbox') == 'true')
