@@ -214,11 +214,8 @@ module TaggableTags
 
     *Usage:* 
     <pre><code><r:tags:cloud /></code></pre>
-
-    The css classes take the form 'cloud_9' where 9 is the band number and smaller numbers are more prominent.
-    By default we allow six bands and unlimited number of tags: you can change that with the bands and limit parameters.
-
-    <pre><code><r:tags:cloud bands="10" limit="1000" /></code></pre>
+    
+    The sizing of tags is logarithmic and continuous rather than banded.
     
     The 'tagpage' parameter prefixes the link destination for each tag displayed in the cloud. We will 
     append the tag name, expecting the destination to be a TagPage showing a list of tagged items. You can
@@ -245,8 +242,8 @@ module TaggableTags
   tag 'tags:cloud' do |tag|
     if tag.locals.tags && tag.locals.tags.any?
       options = tag.attr.dup
-      tag.locals.tags = Tag.get_popularity_of(tag.locals.tags).sort_by{|t| t.title.downcase}                          # nb. get_popularity_of immediately returns list if already popularised
-      bands = options.delete('bands') || tag.locals.bands || 6
+      Rails.logger.warn "!!! going back for cloud prep with: #{tag.locals.tags.inspect}"
+      tag.locals.tags = Tag.for_cloud(tag.locals.tags).sort_by{|t| t.title.downcase}                          # nb. for_cloud immediately returns list if already sized
       listclass = options.delete('listclass') || 'cloud'
       show_checkboxes = (options.delete('checkbox') == 'true')
       result = %{<ul class="#{listclass}">}

@@ -149,7 +149,7 @@ class Tag < ActiveRecord::Base
   
   # takes a list of tags and reaquires it from the database, this time with incidence.
   
-  def self.get_popularity_of(tags)
+  def self.for_cloud(tags)
     return tags if tags.empty? || tags.first.cloud_size
     sized(in_this_list(tags).with_count)
   end
