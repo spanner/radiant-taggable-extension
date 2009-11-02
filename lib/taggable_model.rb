@@ -2,6 +2,10 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
   
   def self.included(base)
     base.extend ClassMethods
+    base.class_eval {
+      @@taggable_models = []
+      cattr_accessor :taggable_models
+    }
   end
 
   module ClassMethods
@@ -25,7 +29,12 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
           :group => "taggings.tagged_id",
           :order => "count(taggings.id) DESC"
         }
-      }
+      } do
+        # Asset.from_tags(Tag.from_list('foo, bar')).paged(3, 50)
+        def paged (options={})
+          paginate({:per_page => 20, :page => 1}.merge(options))
+        end
+      end
 
       named_scope :from_all_tags, lambda { |tags| 
         {
@@ -41,6 +50,9 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
         def count
           length
         end
+        def paged (options={})
+          paginate({:per_page => 20, :page => 1}.merge(options))
+        end
       end
       
       # this sets up eg Taggings.of_model
@@ -55,6 +67,8 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
         alias_method "related_#{self.to_s.underscore.pluralize}".intern, :related
         alias_method "closely_related_#{self.to_s.underscore.pluralize}".intern, :closely_related
       }
+
+      ActiveRecord::Base.taggable_models.push(self.to_s.intern)
     end
   end
 
@@ -62,8 +76,10 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
     def tagged_with(somewords='')
       if somewords.blank?
         []
+      elsif somewords.is_a?(Array)
+        self.from_all_tags(somewords)
       else
-        self.from_tags( Tag.from_list(somewords) )
+        self.from_all_tags( Tag.from_list(somewords) )
       end
     end
 

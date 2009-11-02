@@ -9,22 +9,22 @@ class TaggableExtension < Radiant::Extension
     end
   end
   
+  extension_config do |config|
+    # some of the retrieval mechanisms need to support pagination
+    config.gem 'will_paginate', :version => '~> 2.3.11', :source => 'http://gemcutter.org'
+  end
+  
   def activate
     ActiveRecord::Base.send :include, TaggableModel                     # provide is_taggable for everything but don't call it for anything
     Page.send :is_taggable                                              # make pages taggable 
-    Page.send :include, TaggablePage                                    # then take over the keywords column and add some tweaks specific to the page tree
-    Page.send :include, TaggableTags                                    # create radius tags for tags, lists and clouds
+    Page.send :include, TaggablePage                                    # then fake the keywords column and add some inheritance
+    Page.send :include, TaggableTags                                    # and the basic radius tags for showing page tags and tag pages
     Admin::PagesController.send :include, TaggableAdminPageController   # tweak the admin interface to make page tags more prominent
     UserActionObserver.instance.send :add_observer!, Tag                # tags get creator-stamped
-    TagPage                                                             # page type that reads tags from url
-    SiteController.send :include, TaggableSiteController                # and from tag[] parameters
 
     unless defined? admin.tag
       Radiant::AdminUI.send :include, TaggableAdminUI
       admin.tag = Radiant::AdminUI.load_default_tag_regions
-      if defined? Site
-        admin.tag.index.add :top, "admin/shared/site_jumper"
-      end
     end
 
     admin.tabs.add "Tags", "/admin/tags", :after => "Layouts", :visibility => [:all]

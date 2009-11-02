@@ -37,139 +37,6 @@ module TaggableTags
     tag.expand unless tag.locals.tags && tag.locals.tags.any?
   end
   
-  # Most of the tags here can be understood as compounds in the form select:display. So eg
-  # with coincident_tags:list the 'coincident_tags' part determines the set of tags to be displayed and 
-  # the 'list' part determines how they will be presented.
-  # 
-  # the actual presentation is done by rendering the relevant tags:* tag
-
-  %W{all top page requested coincident}.each do |these|
-    
-    ################# tag-selection prefixes determine the tag list to be displayed. Exceptions are raised by the list-getters if specific requirements not met.
-
-    desc %{
-      Gathers the set of #{these} tags.
-      Not usually called directly, but if you want to you can:
-        
-      *Usage:* 
-      <pre><code><r:#{these}_tags><r:tags:cloud /></r:#{these}_tags></code></pre>
-      
-      is the same as 
-      
-      <pre><code><r:#{these}_tags:cloud /></code></pre>
-      
-      but might give you more control.
-    }
-    tag "#{these}_tags" do |tag|
-      tag.locals.tags = send("_get_#{these}_tags".intern, tag)
-      tag.expand
-    end
-    
-    ################# conditional tags just check presence of designated tags
-
-    desc %{
-      Contents are rendered only if the set of #{these} tags is not empty.
-
-      *Usage:* 
-      <pre><code><r:if_#{these}_tags>...</r:if_#{these}_tags></code></pre>
-    }    
-    tag "if_#{these}_tags" do |tag|
-      tag.locals.tags = send("_get_#{these}_tags".intern, tag)
-      tag.expand if tag.locals.tags.any?
-    end
-    
-    desc %{
-      Contents are rendered only if the set of #{these} tags is empty.
-
-      *Usage:* 
-      <pre><code><r:unless_#{these}_tags>...</r:unless_#{these}_tags></code></pre>
-    }    
-    tag "unless_#{these}_tags" do |tag|
-      tag.locals.tags = send("_get_#{these}_tags".intern, tag)
-      tag.expand unless tag.locals.tags.any?
-    end
-
-    ################# display suffixes pass on to the relevant tags:* method
-
-    desc %{
-      Loops through all the #{these} tags.
-
-      *Usage:* 
-      <pre><code><r:#{these}_tags:each>...</r:#{these}_tags:each></code></pre>
-    }
-    tag "#{these}_tags:each" do |tag|
-      tag.render('tags:each', tag.attr.dup)
-    end
-
-    desc %{
-      Returns a list of all the #{these} tags.
-
-      *Usage:* 
-      <pre><code><r:#{these}_tags:list /></code></pre>
-    }
-    tag "#{these}_tags:list" do |tag|
-      tag.render('tags:list', tag.attr.dup)
-    end
-
-    desc %{
-      Returns a cloud of all the #{these} tags.
-
-      *Usage:* 
-      <pre><code><r:#{these}_tags:cloud /></code></pre>
-    }
-    tag "#{these}_tags:cloud" do |tag|
-      tag.render('tags:cloud', tag.attr.dup)
-    end
-
-    desc %{
-      Summarises in a sentence the list of #{these} tags.
-      
-      *Usage:* 
-      <pre><code><r:#{these}_tags:summary /></code></pre>
-    }    
-    tag "#{these}_tags:summary" do |tag|
-      tag.render('tags:summary', tag.attr.dup)
-    end
-    
-    ################# pagey suffixes on to the relevant tags:pages method. only requested_tags is likely to be much used here.
-    
-    desc %{
-      Lists all the pages tagged with #{these} tags, in descending order of overlap.
-
-      *Usage:* 
-      <pre><code><r:#{these}_tags:pages:each>...</r:#{these}_tags:pages:each></code></pre>
-    }
-    tag "#{these}_tags:pages" do |tag|
-      tag.locals.pages = Page.from_tags(tag.locals.tags)
-      tag.expand
-    end
-    tag "#{these}_tags:pages:each" do |tag|
-      tag.render('page_list', tag.attr.dup, &tag.block) 
-    end
-
-    desc %{
-      Renders the contained elements only if there are any pages associated with #{these} tags.
-
-      *Usage:* 
-      <pre><code><r:#{these}_tags:if_pages>...</r:#{these}_tags:if_pages></code></pre>
-    }
-    tag "#{these}_tags:if_pages" do |tag|
-      tag.render('tags:if_pages', tag.attr.dup, &tag.block)
-    end
-
-    desc %{
-      Renders the contained elements only if there are no pages associated with #{these} tags.
-
-      *Usage:* 
-      <pre><code><r:#{these}_tags:unless_pages>...</r:#{these}_tags:unless_pages></code></pre>
-    }
-    tag "#{these}_tags:unless_pages" do |tag|
-      tag.render('tags:unless_pages', tag.attr.dup, &tag.block)
-    end
-  end
-
-  
-  
   ################# list-display tags: take a set and display it somehow. Because they're in the tags: namespace they default to tag.locals.page.tags.
 
   desc %{
@@ -208,36 +75,10 @@ module TaggableTags
     result
   end
 
-  desc %{
-    Renders a tag cloud showing the local tags, with prominence determined by 
-    their global importance.
 
-    *Usage:* 
-    <pre><code><r:tags:cloud /></code></pre>
-    
-    The sizing of tags is logarithmic and continuous rather than banded.
-    
-    The 'tagpage' parameter prefixes the link destination for each tag displayed in the cloud. We will 
-    append the tag name, expecting the destination to be a TagPage showing a list of tagged items. You can
-    also specify a global tags page with a 'tags.page' config entry. Either way, it should be the absolute
-    url (eg "/tags").
-    
-    <pre><code><r:tags:cloud tagpage="/tags" /></code></pre>
-    
-    If you want a cloud of all the tags in use:
-    
-    <pre><code><r:all_tags:cloud /></code></pre>
-    
-    Or all the tags that coincide with the currently-selected set:
-    
-    <pre><code><r:requested_tags:cloud /></code></pre>
-
-    Or all the tags on this page:
-    
-    <pre><code><r:page_tags:cloud /></code></pre>
-
-    If you want the tags attached to this page (or another page) and all its descendants, r:tag_cloud is probably more useful.
-  }
+  # These are never called directly: but are separated here to dry out the tag handling
+  # see r:tag_cloud, or in the library extension, compound forms like r:coincident_tags:tag_cloud and r:requested_tags:list
+  # same goes for r:tags:summary but that's occasionally useful on a page too.
   
   tag 'tags:cloud' do |tag|
     if tag.locals.tags && tag.locals.tags.length > 1
@@ -259,30 +100,6 @@ module TaggableTags
       "No tags"
     end
   end
-
-  desc %{
-    Renders a tag list showing the tags in context.
-
-    *Usage:* 
-    <pre><code><r:tags:list /></code></pre>
-    
-    or for use in a form:
-    
-    <pre><code><r:tags:list checklist="true" /></code></pre>
-    
-    in which case we will omit the links, add checkboxes and check them for any requested tags.
-      
-    The usual tag lists work:
-    
-    <pre><code>
-      <r:all_tags:list />
-      <r:page_tags:list />
-      <r:requested_tags:list />
-      <r:coincident_tags:list />
-    </code></pre>
-    
-    But if you want the tags attached to this page (or another page) and all its descendants, you'll find r:tag_list more helpful.
-  }
   
   tag 'tags:list' do |tag|
     if tag.locals.tags && tag.locals.tags.any?
@@ -292,15 +109,7 @@ module TaggableTags
       result = %{<ul class="#{listclass}">}
       tag.locals.tags.each do |t|
         tag.locals.tag = t
-        if show_checkboxes
-          if tag.locals.page.is_a?(TagPage) && tag.locals.page.requested_tags.include?(t)
-            checked = ' checked="true"'
-            checkedclass = ' class="checked"'
-          end
-          result << %{<li#{checkedclass}><input type="checkbox" name="tag[]" id="tag_#{t.id}" value=#{t.id}#{checked} />#{tag.render('tag:name')}</li>}
-        else
-          result << %{<li>#{tag.render('tag:link', options)}</li>}
-        end
+        result << %{<li>#{tag.render('tag:link', options)}</li>}
       end 
       result << "</ul>"
       result
@@ -313,31 +122,6 @@ module TaggableTags
 
   ################# page-candy: these are high level tags that bring in a whole block of stuff. 
                   # most can be built out of the smaller tags if you need them to work differently
-
-  desc %{
-    This is essentially a filtering form: it returns a cloud of the selected tags, linked so that you can remove them, 
-    and a cloud of related (ie subsetting) tags, linked so that you can add them. It only works on a TagPage. 
-    
-    You can limit the size of the available-tags list in the usual way. The default limit is 40.
-    
-    *Usage:* 
-    <pre><code><r:tag_chooser limit="20" /></code></pre>
-  }    
-  tag 'tag_chooser' do |tag|
-    options = tag.attr.dup
-    result = []
-    requested_tags = _get_requested_tags(tag)
-    if requested_tags.any?
-      result << %{<p>Broaden your search by removing a tag:</p>}
-      result << tag.render("requested_tags:cloud", options.merge({'unlink' => true, 'listclass' => 'cloud remove_tags'}))
-      result << %{<p>Refine your search by adding another tag:</p>}
-      result << tag.render("coincident_tags:cloud", options.merge({'unlink' => false, 'listclass' => 'cloud add_tags'}))
-    else
-      result << %{<p>Narrow your search by choosing a tag</p>}
-      result << tag.render("all_tags:cloud")
-    end
-    result
-  end
 
   desc %{
     Returns a tag-cloud showing all the tags attached to this page and its descendants, 
@@ -361,9 +145,7 @@ module TaggableTags
         
     As usual you can limit the size of the cloud (the most popular will be shown) and set the destination of tag links:
     
-    <pre><code><r:tag_cloud limit="200" tagpage="/archive" /></code></pre>
-    
-    If you want to show all the tags in the database, you want r:all_tags:cloud, btw.
+    <pre><code><r:tag_cloud limit="200" linkto="/archive" /></code></pre>
   }    
   tag 'tag_cloud' do |tag|
     options = tag.attr.dup
@@ -387,7 +169,7 @@ module TaggableTags
     
     As usual you can limit the size of the list (the most popular will be shown) and set the destination of tag links:
     
-    <pre><code><r:tag_list limit="200" tagpage="/archive" /></code></pre>    
+    <pre><code><r:tag_list limit="200" linkto="/archive" /></code></pre>    
   }    
   tag 'tag_list' do |tag|
     options = tag.attr.dup
@@ -518,7 +300,7 @@ module TaggableTags
   end
 
   desc %{
-    Contents are rendered if a tag is currently defined. Useful on a TagPage page where you may or
+    Contents are rendered if a tag is currently defined. Useful on a LibraryPage page where you may or
     may not have received a tag parameter.
     
     *Usage:* 
@@ -530,7 +312,7 @@ module TaggableTags
   end
   
   desc %{
-    Contents are rendered if no tag is currently defined. Useful on a TagPage page where you may or
+    Contents are rendered if no tag is currently defined. Useful on a LibraryPage page where you may or
     may not have a tag parameter.
     
     *Usage:* 
@@ -553,14 +335,14 @@ module TaggableTags
   end
 
   desc %{
-    Makes a link to the current tag. If the current page is a tag page, we amend the 
-    list of requested tags. Otherwise, the 'tagpage' parameter can be the address of a 
-    TagPage, or you can specify a global tags page with a 'tags.page' config entry.
+    Makes a link to the current tag. If the current page is a library page, we amend the 
+    list of requested tags. Otherwise, the 'linkto' parameter can be the address of a 
+    LibraryPage, or you can specify a global tags page with a 'library.path' config entry.
     
-    If no tagpage is specified we return a relative link to the escaped name of the tag.
+    If no destination is specified we return a relative link to the escaped name of the tag.
     
     *Usage:* 
-    <pre><code><r:tag:link tagpage='/tags' /></code></pre>
+    <pre><code><r:tag:link linkto='/library' /></code></pre>
   }
   tag 'tag:link' do |tag|
     raise TagError, "tag must be defined for tag:link tag" unless tag.locals.tag
@@ -570,38 +352,13 @@ module TaggableTags
     attributes = " #{attributes}" unless attributes.empty?
     text = tag.double? ? tag.expand : tag.render('tag:name')
 
-    if tag.locals.page.is_a?(TagPage)
+    if defined? LibraryPage && tag.locals.page.is_a?(LibraryPage)
       href = tag.locals.page.tagged_url(tag.locals.page.requested_tags + [tag.locals.tag])
-    elsif page_url = (options.delete('tagpage') || Radiant::Config['tags.page'])
+    elsif page_url = (options.delete('linkto') || Radiant::Config['library.path'])
       href = clean_url(page_url + '/' + tag.locals.tag.clean_title)
-    else 
-      href ||= Rack::Utils.escape("#{tag.locals.tag.title}") + '/'
-    end
-
-    %{<a href="#{href}#{anchor}"#{attributes}>#{text}</a>}
-  end
-
-  desc %{
-    Makes a link that removes the current tag from the active set. Other options as for tag:link.
-        
-    *Usage:* 
-    <pre><code><r:tag:unlink tagpage='/tags' /></code></pre>
-  }
-  tag 'tag:unlink' do |tag|
-    raise TagError, "tag must be defined for tag:unlink tag" unless tag.locals.tag
-    options = tag.attr.dup
-    options['class'] ||= 'detag'
-    anchor = options['anchor'] ? "##{options.delete('anchor')}" : ''
-    attributes = options.inject('') { |s, (k, v)| s << %{#{k.downcase}="#{v}" } }.strip
-    attributes = " #{attributes}" unless attributes.empty?
-    text = tag.double? ? tag.expand : tag.render('tag:name')
-    
-    if tag.locals.page.is_a?(TagPage)
-      href = tag.locals.page.tagged_url(tag.locals.page.requested_tags - [tag.locals.tag])
-    elsif page_url = (options.delete('tagpage') || Radiant::Config['tags.page'])
-      href = clean_url(page_url + '/-' + tag.locals.tag.clean_title)
-    else 
-      href ||= Rack::Utils.escape("-#{tag.locals.tag.title}") + '/'
+    else
+      # note that this only works if you're at a url with an trailing slash...
+      href = Rack::Utils.escape("#{tag.locals.tag.title}") + '/'
     end
 
     %{<a href="#{href}#{anchor}"#{attributes}>#{text}</a>}
@@ -616,17 +373,6 @@ module TaggableTags
   tag 'tag:description' do |tag|    
     raise TagError, "tag must be defined for tag:description tag" unless tag.locals.tag
     tag.locals.tag.description
-  end
-
-  desc %{
-    Shows cloud_band of current tag (which will normally only be set if we're within a tag_cloud tag)
-    
-    *Usage:* 
-    <pre><code><r:tag:cloud_band /></code></pre>
-  }    
-  tag 'tag:cloud_band' do |tag|
-    raise TagError, "tag must be defined for tag:cloud_band tag" unless tag.locals.tag
-    tag.locals.tag.cloud_band
   end
 
   desc %{
@@ -689,19 +435,19 @@ private
     if title = options.delete('title')
       tag.locals.tag ||= Tag.find_by_title(title)
     end
-    if tag.locals.page.is_a?(TagPage)
+    if tag.locals.page.is_a?(LibraryPage)
       tag.locals.tag ||= tag.locals.page.requested_tags.first
     end
   end
   
   # this is the default used for bare tags:* tags.
-  # among other things it catches the tags="" parameter
+  # among other things it catches the tags="" attribute
   # but change is likely here and anything not documented shouldn't be relied upon.
   
   def _get_tags(tag)
     tags = if tag.attr['tags'] && !tag.attr['tags'].blank?
       Tag.from_list(tag.attr['tags'], false)    # false parameter -> not to create missing tags
-    elsif tag.locals.page.is_a?(TagPage)
+    elsif tag.locals.page.respond_to?(:requested_tags)
       tag.locals.page.requested_tags
     elsif tag.locals.page
       tag.locals.page.attached_tags
@@ -710,34 +456,5 @@ private
     end
     tags = tags.uniq.select{|t| !t.nil? }
   end  
-  
-  def _get_all_tags(tag)
-    Tag.find(:all)
-  end
 
-  def _get_top_tags(tag)
-    limit = tag.attr.delete('limit') || 1000
-    Tag.most_popular(limit)
-  end
-  
-  def _get_page_tags(tag)
-    raise TagError, "page_tags needs a page" unless tag.locals.page
-    tag.locals.page.attached_tags
-  end
-
-  def _get_requested_tags(tag)
-    raise TagError, "requested_tags tags can only be used on a TagPage" unless tag.locals.page && tag.locals.page.is_a?(TagPage)
-    tag.locals.page.requested_tags
-  end
-  
-  def _get_coincident_tags(tag)
-    raise TagError, "coincident_tags tag can only be used on a TagPage" unless tag.locals.page && tag.locals.page.is_a?(TagPage)
-    tags = tag.locals.page.requested_tags
-    if tags.any?
-      Tag.coincident_with(tags) 
-    else
-      Tag.find(:all)
-    end
-  end
-  
 end
