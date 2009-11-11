@@ -1,0 +1,24 @@
+ul.cloud {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  line-height: 1.6em;
+  margin-left: -5px; }
+  ul.cloud li {
+    display: inline;
+    float: left;
+    letter-spacing: -0.04em;
+    height: 1.6em; }
+    ul.cloud li a {
+      display: inline;
+      white-space: nowrap;
+      padding: 5px; }
+
+a.detag {
+  padding-left: 15px;
+  background-color: transparent;
+  background-image: url(/images/admin/collapse.png);
+  background-repeat: no-repeat; }
+

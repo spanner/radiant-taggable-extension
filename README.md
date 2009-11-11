@@ -121,7 +121,11 @@ As usual:
 	rake radiant:extensions:taggable:update
 
 The update task will bring over a couple of CSS files for styling tags but you'll want to improve those.
-	
+
+## Bugs
+
+Very likely. [Github issues](http://github.com/spanner/radiant-taggable-extension/issues), please, or for little things an email or github message is fine.
+
 ## Author and copyright
 
 * William Ross, for spanner. will at spanner.org

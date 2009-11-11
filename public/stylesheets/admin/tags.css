@@ -18,30 +18,3 @@ ul.cloud {
     white-space: nowrap;
     line-height: 20px;
     margin: 0; }
-  ul.cloud li a {
-    text-decoration: none; }
-  ul.cloud li.waiting a {
-    color: #8c8d8e; }
-  ul.cloud li.cloud_0 a {
-    font-size: 0.9em;
-    color: #cfe4ee; }
-  ul.cloud li.cloud_1 a {
-    font-size: 1.2em;
-    color: #b1d2e3; }
-  ul.cloud li.cloud_2 a {
-    font-size: 1.5em;
-    color: #a0c8de; }
-  ul.cloud li.cloud_3 a {
-    font-size: 1.8em;
-    color: #85b8d5; }
-  ul.cloud li.cloud_4 a {
-    font-size: 2.1em;
-    color: #71adce; }
-  ul.cloud li.cloud_5 a {
-    font-size: 2.4em;
-    color: #559dc4; }
-  ul.cloud li.cloud_6 a {
-    font-size: 2.4em;
-    color: #559dc4; }
-  ul.cloud li a:hover {
-    color: #c00; }
