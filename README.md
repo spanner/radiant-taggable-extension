@@ -17,7 +17,7 @@ When you first install the extension you shouldn't see much difference: all we d
 
 ## New
 
-I've just stripped out quite a lot of display clutter in order to focus on the basic tagging mechanism here. Retrieval and display is now handled by the library extension. The core radius tags remain here.
+I've just stripped out quite a lot of display clutter in order to focus on the basic tagging mechanism here. Retrieval and display is now handled by the [library](http://example.com/) extension. The core radius tags remain here.
 
 ## Status 
 
@@ -35,14 +35,6 @@ Not too bad, I think. The tag pages are cached and most of the heavy retrieval f
 is handled in a single pass. 
 
 The exception is the `r:tag_cloud` tag: there we have to gather a list of descendant pages first. It's done in a fairly frugal way (by generation rather than individual) but still likely to involve several preparatory queries as well as the cloud computation.
-
-## Tag pages
-
-The **TagPage** page type is just a handy way of catching tag parameters: any path following the address of the page is taken as a slash-separated list of tags, so with a tag page at /archive/tags you can call addresses like:
-
-	/archive/tags/lasagne/chips/pudding
-	
-and the right tags will be retrieved, if they exist, and made available to the page, where you can display them using the luxurious assortment of tags below.
 
 ## Radius tags
 
