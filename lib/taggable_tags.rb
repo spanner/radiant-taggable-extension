@@ -438,6 +438,7 @@ private
     if tag.locals.page.is_a?(LibraryPage)
       tag.locals.tag ||= tag.locals.page.requested_tags.first
     end
+    tag.locals.tag
   end
   
   # this is the default used for bare tags:* tags.
