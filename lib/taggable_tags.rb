@@ -352,16 +352,20 @@ module TaggableTags
     attributes = " #{attributes}" unless attributes.empty?
     text = tag.double? ? tag.expand : tag.render('tag:name')
 
-    if defined? LibraryPage && tag.locals.page.is_a?(LibraryPage)
-      href = tag.locals.page.tagged_url(tag.locals.page.requested_tags + [tag.locals.tag])
+    logger.warn ">>  building url for #{tag.locals.tag.title}"
+
+    if tag.locals.page.respond_to? :tagged_url
+      tagset = tag.locals.page.requested_tags + [tag.locals.tag]
+      logger.warn ">>  the tag set will be #{tagset.inspect}"
+      destination = tag.locals.page.tagged_url(tagset)
     elsif page_url = (options.delete('linkto') || Radiant::Config['library.path'])
-      href = clean_url(page_url + '/' + tag.locals.tag.clean_title)
+      destination = clean_url(page_url + '/' + tag.locals.tag.clean_title)
     else
       # note that this only works if you're at a url with an trailing slash...
-      href = Rack::Utils.escape("#{tag.locals.tag.title}") + '/'
+      destination = Rack::Utils.escape("#{tag.locals.tag.title}") + '/'
     end
 
-    %{<a href="#{href}#{anchor}"#{attributes}>#{text}</a>}
+    %{<a href="#{destination}#{anchor}"#{attributes}>#{text}</a>}
   end
 
   desc %{
@@ -435,7 +439,7 @@ private
     if title = options.delete('title')
       tag.locals.tag ||= Tag.find_by_title(title)
     end
-    if tag.locals.page.is_a?(LibraryPage)
+    if tag.locals.page.respond_to? :requested_tags
       tag.locals.tag ||= tag.locals.page.requested_tags.first
     end
     tag.locals.tag

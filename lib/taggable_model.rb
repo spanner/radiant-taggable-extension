@@ -19,9 +19,6 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
       has_many :taggings, :as => :tagged
       has_many :attached_tags, :through => :taggings, :source => :tag    # can't be just has_many :tags because that stomps on the radius tags in Page.
       
-      # note that you have to avoid anything that will call count on this scope
-      # and that includes for example calling assets.empty? before there has been a find:
-      # empty? is sugared so that it counts rather than finding and then lengthing
       named_scope :from_tags, lambda { |tags| 
         {
           :joins => "INNER JOIN taggings on taggings.tagged_id = #{self.table_name}.id AND taggings.tagged_type = '#{self.to_s}'", 
@@ -111,13 +108,27 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
       self.attached_tags.empty? ? [] : self.class.from_all_tags(self.attached_tags) - [self]
     end
     
-    def tags_for_cloud(limit=50, bands=6)
-
-      # here would we want local or global prominence?
-
+    # in the case of pages and anything else that keywords in the same way this overrides the existing column
+    # the rest of the time it's just another way of specifying tags.
+    
+    def keywords 
+      self.attached_tags.map {|t| t.title}.join(', ')
+    end
+    
+    def keywords=(somewords="")
+      self.attached_tags = Tag.from_list(somewords)
+    end
+    
+    def keywords_before_type_cast   # for form_helper
+      keywords
+    end
+    
+    def tags_from_keywords
+      if self.class.column_names.include?('keywords') && keys = read_attribute(:keywords)
+        self.attached_tags = Tag.from_list(keys)
+      end
     end
     
   end
-
 end
 

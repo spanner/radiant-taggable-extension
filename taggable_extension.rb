@@ -27,16 +27,21 @@ class TaggableExtension < Radiant::Extension
       admin.tag = Radiant::AdminUI.load_default_tag_regions
     end
 
-    admin.tabs.add "Tags", "/admin/tags", :after => "Layouts", :visibility => [:all]
-    if admin.tabs['Tags'].respond_to?(:add_link)
-      admin.tabs['Tags'].add_link('tag list', '/admin/tags')
-      admin.tabs['Tags'].add_link('tag cloud', '/admin/tags/cloud')
-      admin.tabs['Tags'].add_link('new tag', '/admin/tags/new')
+    if respond_to?(:tab)
+      tab("Content") do
+        add_item("Tags", "/admin/tags")
+      end
+    else
+      admin.tabs.add "Tags", "/admin/tags", :after => "Layouts", :visibility => [:all]
+      if admin.tabs['Tags'].respond_to?(:add_link)
+        admin.tabs['Tags'].add_link('tag list', '/admin/tags')
+        admin.tabs['Tags'].add_link('tag cloud', '/admin/tags/cloud')
+        admin.tabs['Tags'].add_link('new tag', '/admin/tags/new')
+      end
     end
   end
   
   def deactivate
     admin.tabs.remove "Tags"
   end
-  
 end

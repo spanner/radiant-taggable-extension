@@ -1,7 +1,7 @@
 class ImportKeywords < ActiveRecord::Migration
   def self.up
     Page.find(:all).each do |page|
-      page.keywords = page.read_attribute(:keywords)
+      page.tags_from_keywords
     end
   end
 

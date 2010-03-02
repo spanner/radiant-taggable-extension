@@ -20,18 +20,6 @@ module TaggablePage      # for inclusion into Page
 
   module InstanceMethods
 
-    def keywords 
-      self.attached_tags.map {|t| t.title}.join(', ')
-    end
-    
-    def keywords=(somewords="")
-      self.attached_tags = Tag.from_list(somewords)
-    end
-    
-    def keywords_before_type_cast   # ugh! but necessary for form_helper
-      keywords
-    end
-
     # note varying logic here: tag clouds are used differently when describing a group.
     # if only one object is relevant, all of its tags will be equally (locally) important. 
     # Presumably that cloud should show global tag importance.
