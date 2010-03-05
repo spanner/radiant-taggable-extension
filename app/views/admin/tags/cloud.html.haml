@@ -8,5 +8,5 @@
 
 %ul.cloud
   - @tags.each do |tag|
-    %li{:class => "cloud_#{tag.cloud_band}"}
+    %li{:style => "font-size: #{tag.cloud_size.to_f * 2.5}em; opacity: #{tag.cloud_size};"}
       = link_to tag.title, admin_tag_url(tag)

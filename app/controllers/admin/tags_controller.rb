@@ -6,7 +6,7 @@ class Admin::TagsController < Admin::ResourceController
   end
   
   def cloud
-    @tags = Tag.banded(Tag.with_count)
+    @tags = Tag.sized(Tag.with_count)
     response_for :plural
   end
     
