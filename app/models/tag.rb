@@ -43,6 +43,10 @@ class Tag < ActiveRecord::Base
     }
   }
   
+  def to_s
+    title
+  end
+  
   # Standardises formatting of tag name in urls
   
   def clean_title
@@ -83,11 +87,11 @@ class Tag < ActiveRecord::Base
     !reflect_on_association(:site).nil?
   end
   
-  # turns a comma-separate string of tag titles into a list of tag objects, creating where necessary
+  # turns an array or comma-separated string of tag titles into a list of tag objects, creating if specified
 
-  def self.from_list(list='', or_create=true)
-    return [] if list.blank?
-    list.split(/[,;]\s*/).uniq.map { |t| self.for(t, or_create) }
+  def self.from_list(list=[], or_create=true)
+    list = list.split(/[,;]\s*/) if String === list
+    list.uniq.map {|t| self.for(t, or_create) }.select{|t| !t.nil? }
   end
   
   # finds or creates a tag with the supplied title

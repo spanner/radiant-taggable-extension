@@ -8,7 +8,7 @@ This extension differs from `tags` in a few ways that matter to me but may not t
 
 * We're not so focused on tag clouds - though you can still make them - but more on archival and linking functions.
 * We replace the keywords mechanism on pages rather than adding another one.
-* Anything can be tagged. By default we only do pages but other extensions can participate with a single line in a model class. See the [paperclipped_taggable](https://github.com/spanner/radiant-paperclipped_taggable-extension) extension for an example or just put `is_taggable` at the top of a model class and see what happens.
+* Anything can be tagged. By default we only do pages but other extensions can participate with a single line in a model class. See the [taggable_events](https://github.com/spanner/radiant-taggable_events-extension) extension for a minimal example or just put `is_taggable` at the top of a model class and see what happens.
 * We don't use `has_many_polymorphs` (it burns!)
 * Or any of the tagging libraries: it only takes a few named_scopes
 * it's multi-site compatible: if our fork is installed then you get site-scoped tags and taggings.
@@ -17,7 +17,7 @@ When you first install the extension you shouldn't see much difference: all we d
 
 ## New
 
-I've just stripped out quite a lot of display clutter in order to focus on the basic tagging mechanism here. Retrieval and display is now handled by the [library](http://example.com/) extension. The core radius tags remain here.
+I've just stripped out quite a lot of display clutter in order to focus on the basic tagging mechanism here. Retrieval and display is now handled by the [library](http://example.com/) extension. The core radius tags remain here. Anything that used to refer to a tag page is probably now handled by the library page.
 
 ## Status 
 
@@ -25,7 +25,7 @@ The underlying code is fairly well broken-in and has been in production for a co
 
 ## Efficiency
 
-Not too bad, I think. The tag pages are cached and most of the heavy retrieval functions have been squashed down into single queries. Each of these:
+Not too bad, I think. Most of the heavy retrieval functions have been squashed down into single queries. Each of these:
 
 	Tag.most_popular(50)
 	Tag.coincident_with(tag1, tag2, tag3)
@@ -42,7 +42,7 @@ This extension creates several radius tags. There are two kinds:
 
 ### presenting tag information
 
-are used in the usual to display the properties and associations of a given tag (which can be supplied to a tag page as a query parameter or just specified in the radius tag)
+are used in the usual to display the properties and associations of a given tag (which can be supplied to a library as a query parameter or just specified in the radius tag)
 
 	<r:tag:title />
 	<r:tag:description />

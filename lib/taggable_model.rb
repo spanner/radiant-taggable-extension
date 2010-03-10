@@ -23,7 +23,7 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
         {
           :joins => "INNER JOIN taggings on taggings.tagged_id = #{self.table_name}.id AND taggings.tagged_type = '#{self.to_s}'", 
           :conditions => ["taggings.tag_id in(#{tags.map{ '?' }.join(',')})"] + tags.map(&:id),
-          :group => "taggings.tagged_id",
+          :group => column_names.map { |n| table_name + '.' + n }.join(','),    # postgres is strict and requires that we group by all selected (but not aggregated) columns
           :order => "count(taggings.id) DESC"
         }
       } do
@@ -37,7 +37,7 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
         {
           :joins => "INNER JOIN taggings on taggings.tagged_id = #{self.table_name}.id AND taggings.tagged_type = '#{self.to_s}'", 
           :conditions => ["taggings.tag_id in(#{tags.map{ '?' }.join(',')})"] + tags.map(&:id),
-          :group => "#{self.table_name}.id",
+          :group => column_names.map { |n| table_name + '.' + n }.join(','),    # postgres is strict and requires that we group by all selected (but not aggregated) columns
           :having => "count(taggings.id) >= #{tags.length}"
         }
       } do
