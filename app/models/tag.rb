@@ -91,7 +91,7 @@ class Tag < ActiveRecord::Base
 
   def self.from_list(list=[], or_create=true)
     list = list.split(/[,;]\s*/) if String === list
-    list.uniq.map {|t| self.for(t, or_create) }.select{|t| !t.nil? }
+    list.uniq.map {|t| self.for(t, or_create) }.select{|t| !t.nil? } if list && list.any?
   end
   
   # finds or creates a tag with the supplied title

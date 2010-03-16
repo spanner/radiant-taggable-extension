@@ -116,7 +116,11 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
     end
     
     def keywords=(somewords="")
-      self.attached_tags = Tag.from_list(somewords)
+      if somewords.blank?
+        self.attached_tags.clear
+      else
+        self.attached_tags = Tag.from_list(somewords)
+      end
     end
     
     def keywords_before_type_cast   # for form_helper
