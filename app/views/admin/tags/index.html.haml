@@ -1,12 +1,7 @@
 - include_stylesheet 'admin/tags'
 = render_region :top 
 
-%h1 
-  Tag list
-%p 
-  Tags are most easy to define while you edit something - just type in a name - but you can also use this page to add, edit and tidy the set.
-
-#tags_table
+#tags_table.outset
   %table{ :class => "index", :cellpadding => "0", :cellspacing => "0", :border => "0"}
     %thead
       %tr
@@ -26,6 +21,7 @@
           - render_region :tbody do |tbody|
             - tbody.title_cell do
               %td.tag-title
+                = link_to image('tag', :alt => ''), edit_admin_tag_url(:id => tag.id) 
                 = link_to tag.title, edit_admin_tag_url(:id => tag.id) 
 
             - tbody.description_cell do
@@ -42,13 +38,15 @@
 
             - tbody.modify_cell do
               %td.remove
-                = link_to image_tag('admin/remove.png', :alt => 'Remove Asset'), admin_tag_url(tag), :method => 'delete'
+                = link_to "remove", admin_tag_url(tag), :method => 'delete'
  
 - render_region :bottom do |bottom|
   - bottom.new_button do
-    %p
-      = link_to image_tag('admin/new-tag.png', :alt => 'New Tag'), new_admin_tag_url
-
+    #actions
+      %ul
+        %li= link_to image('plus') + " " + "new tag", new_admin_tag_url
+        %li= link_to "tag list", cloud_admin_tags_url, :class => 'minor'
+        %li= link_to "tag cloud", admin_tags_url, :class => 'minor'
    
 %script{ :type => "text/javascript"}
   // <! [CDATA[
