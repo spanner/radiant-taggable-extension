@@ -165,6 +165,10 @@ class Tag < ActiveRecord::Base
     sized(in_this_list(tags).with_count)
   end
   
+  def self.cloud_from(these)
+    for_cloud(attached_to(these))
+  end
+  
   # adds retrieval methods for a taggable class to this class and to Tagging.
   
   def self.define_class_retrieval_methods(classname)
