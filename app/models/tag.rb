@@ -42,12 +42,12 @@ class Tag < ActiveRecord::Base
     }
   }
   
-  # NB. this doesn't work with a heterogeneous group. 
+  # NB. this won't work with a heterogeneous group. 
   named_scope :attached_to, lambda { |these|
     klass = these.first.is_a?(Page) ? Page : these.first.class
     {
-      :joins => "INNER JOIN taggings ON taggings.tag_id = tags.id", 
-      :conditions => ["taggings.tagged_type = '#{klass}' and taggings.tagged_id IN (#{these.map{'?'}.join(',')})", *these.map(&:id)],
+      :joins => "INNER JOIN taggings as tt ON tt.tag_id = tags.id", 
+      :conditions => ["tt.tagged_type = '#{klass}' and tt.tagged_id IN (#{these.map{'?'}.join(',')})", *these.map(&:id)],
     }
   }
     
