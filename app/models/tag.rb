@@ -15,6 +15,14 @@ class Tag < ActiveRecord::Base
     }
   }
   
+  # this is normally used to exclude current tags from a cloud or list
+  
+  named_scope :except, lambda { |tags|
+    if tags.any?
+      { :conditions => ["tags.id NOT IN (#{tags.map{'?'}.join(',')})", *tags.map{|t| t.is_a?(Tag) ? t.id : t}] }
+    end
+  }
+  
   # NB unused tags are omitted
   
   named_scope :with_count, {
@@ -42,7 +50,7 @@ class Tag < ActiveRecord::Base
       :conditions => ["taggings.tagged_type = '#{klass}' and taggings.tagged_id IN (#{these.map{'?'}.join(',')})", *these.map(&:id)],
     }
   }
-  
+    
   def to_s
     title
   end
@@ -92,6 +100,10 @@ class Tag < ActiveRecord::Base
   def self.from_list(list=[], or_create=true)
     list = list.split(/[,;]\s*/) if String === list
     list.uniq.map {|t| self.for(t, or_create) }.select{|t| !t.nil? } if list && list.any?
+  end
+  
+  def self.to_list(tags=[])
+    tags.uniq.map(&:title).join(',')
   end
   
   # finds or creates a tag with the supplied title
