@@ -12,7 +12,7 @@ describe Page do
   end
   
   it "should return a weighted list of tags from page list" do
-    Page.tags_for_cloud_from([pages(:first)]).should == Tag.from_list("ideas, colourless, sleep, furiously")
+    Page.tags_for_cloud_from([pages(:first)]).should == Tag.from_list("colourless, ideas, sleep, furiously")
   end
   
   describe "instantiated with tags" do
@@ -62,12 +62,12 @@ describe Page do
   describe "when cloud-building" do
     describe "across the whole collection" do
       before do
-        @tags = Tag.banded(Tag.most_popular(10))
+        @tags = Tag.sized(Tag.most_popular(10))
       end
       
       it "should weight the tags" do
         tag = @tags.select{|t| t.title = "Ideas"}.first
-        tag.cloud_band.should_not be_nil
+        tag.cloud_size.should_not be_nil
         tag.use_count.should == "3"                 # counting every use
       end
     end
@@ -85,8 +85,8 @@ describe Page do
 
     it "should return a weighted list of tags attached to itself and descendants" do
       @tags.first.should == tags(:ideas)
-      @tags.first.cloud_band.should_not be_nil
-      @tags.first.use_count.should == "3"           # counting only within this family tree
+      @tags.first.cloud_size.should_not be_nil
+      @tags.first.use_count.should == "1"           # counting only within this family tree
     end
 
   end

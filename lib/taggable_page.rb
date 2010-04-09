@@ -28,7 +28,7 @@ module TaggablePage      # for inclusion into Page
     
     def tags_for_cloud(limit=50, bands=6)
       tags = Tag.attached_to(self.with_children).most_popular(limit)
-      Tag.banded(tags, bands)
+      Tag.sized(tags, bands)
     end
     
     # the family-tree builder works with generations instead of individuals to cut down the number of retrieval steps
