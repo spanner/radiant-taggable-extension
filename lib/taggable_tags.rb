@@ -351,20 +351,15 @@ module TaggableTags
     attributes = options.inject('') { |s, (k, v)| s << %{#{k.downcase}="#{v}" } }.strip
     attributes = " #{attributes}" unless attributes.empty?
     text = tag.double? ? tag.expand : tag.render('tag:name')
-
-    logger.warn ">>  building url for #{tag.locals.tag.title}"
-
-    if tag.locals.page.respond_to? :tagged_url
+    if tag.locals.page.is_a? LibraryPage
       tagset = tag.locals.page.requested_tags + [tag.locals.tag]
-      logger.warn ">>  the tag set will be #{tagset.inspect}"
-      destination = tag.locals.page.tagged_url(tagset)
+      destination = tag.locals.page.url(tagset)
     elsif page_url = (options.delete('linkto') || Radiant::Config['library.path'])
       destination = clean_url(page_url + '/' + tag.locals.tag.clean_title)
     else
-      # note that this only works if you're at a url with an trailing slash...
+      # note that this only works if you're at a url with a trailing slash...
       destination = Rack::Utils.escape("#{tag.locals.tag.title}") + '/'
     end
-
     %{<a href="#{destination}#{anchor}"#{attributes}>#{text}</a>}
   end
 

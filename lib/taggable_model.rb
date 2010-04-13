@@ -26,12 +26,7 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
           :group => column_names.map { |n| table_name + '.' + n }.join(','),    # postgres is strict and requires that we group by all selected (but not aggregated) columns
           :order => "count(taggings.id) DESC"
         }
-      } do
-        # Asset.from_tags(Tag.from_list('foo, bar')).paged(3, 50)
-        def paged (options={})
-          paginate({:per_page => 20, :page => 1}.merge(options))
-        end
-      end
+      }
 
       named_scope :from_all_tags, lambda { |tags| 
         {
@@ -46,9 +41,6 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
         # this gives us back any? and empty? as well.
         def count
           length
-        end
-        def paged (options={})
-          paginate({:per_page => 20, :page => 1}.merge(options))
         end
       end
       
