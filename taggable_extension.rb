@@ -42,6 +42,6 @@ class TaggableExtension < Radiant::Extension
   end
   
   def deactivate
-    admin.tabs.remove "Tags"
+    admin.tabs.remove "Tags" unless respond_to?(:tab)
   end
 end
