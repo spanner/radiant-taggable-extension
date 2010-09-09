@@ -52,7 +52,7 @@ module TaggableTags
       options = tag.attr.dup
       tag.locals.tags.map { |t|
         tag.locals.tag = t
-        tag.render('tag:unlink', options)
+        tag.render('tag:title', options)
       }.to_sentence
     else
       "no tags"
@@ -90,8 +90,7 @@ module TaggableTags
       tag.locals.tags.each do |t|
         tag.locals.tag = t
         result << %{<li>}
-        linktype = options.delete('unlink') ? 'unlink' : 'link'
-        result << tag.render("tag:#{linktype}", options.merge('style' => "font-size: #{t.cloud_size.to_f * 2.5}em; opacity: #{t.cloud_size};"))
+        result << tag.render("tag:link", options.merge('style' => "font-size: #{t.cloud_size.to_f * 2.5}em; opacity: #{t.cloud_size};"))
         result << %{</li>}
       end 
       result << "</ul>"

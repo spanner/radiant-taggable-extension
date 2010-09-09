@@ -21,19 +21,19 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
       
       named_scope :from_tags, lambda { |tags| 
         {
-          :joins => "INNER JOIN taggings on taggings.tagged_id = #{self.table_name}.id AND taggings.tagged_type = '#{self.to_s}'", 
-          :conditions => ["taggings.tag_id in(#{tags.map{ '?' }.join(',')})"] + tags.map(&:id),
+          :joins => "INNER JOIN taggings as tt on tt.tagged_id = #{self.table_name}.id AND tt.tagged_type = '#{self.to_s}'", 
+          :conditions => ["tt.tag_id in(#{tags.map{ '?' }.join(',')})"] + tags.map(&:id),
           :group => column_names.map { |n| table_name + '.' + n }.join(','),    # postgres is strict and requires that we group by all selected (but not aggregated) columns
-          :order => "count(taggings.id) DESC"
+          :order => "count(tt.id) DESC"
         }
       }
 
       named_scope :from_all_tags, lambda { |tags| 
         {
-          :joins => "INNER JOIN taggings on taggings.tagged_id = #{self.table_name}.id AND taggings.tagged_type = '#{self.to_s}'", 
-          :conditions => ["taggings.tag_id in(#{tags.map{ '?' }.join(',')})"] + tags.map(&:id),
+          :joins => "INNER JOIN taggings as tt on tt.tagged_id = #{self.table_name}.id AND tt.tagged_type = '#{self.to_s}'", 
+          :conditions => ["tt.tag_id in(#{tags.map{ '?' }.join(',')})"] + tags.map(&:id),
           :group => column_names.map { |n| table_name + '.' + n }.join(','),    # postgres is strict and requires that we group by all selected (but not aggregated) columns
-          :having => "count(taggings.id) >= #{tags.length}"
+          :having => "count(tt.id) >= #{tags.length}"
         }
       } do
         # count is badly sugared here: it omits the group and having clauses.
@@ -62,10 +62,8 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
   end
 
   module TaggableClassMethods
-    def tagged_with(somewords='')
-      if somewords.blank?
-        []
-      elsif somewords.is_a?(Array)
+    def tagged_with(somewords=[])
+      if somewords.is_a?(Array)
         self.from_all_tags(somewords)
       else
         self.from_all_tags( Tag.from_list(somewords) )

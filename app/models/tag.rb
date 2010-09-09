@@ -42,7 +42,9 @@ class Tag < ActiveRecord::Base
     }
   }
   
-  # NB. this won't work with a heterogeneous group. 
+  # this takes a list and returns all the tags attached to any item in that list
+  # NB. won't work with a heterogeneous group: all items must be of the same class
+  
   named_scope :attached_to, lambda { |these|
     klass = these.first.is_a?(Page) ? Page : these.first.class
     {
@@ -50,7 +52,17 @@ class Tag < ActiveRecord::Base
       :conditions => ["tt.tagged_type = '#{klass}' and tt.tagged_id IN (#{these.map{'?'}.join(',')})", *these.map(&:id)],
     }
   }
-    
+  
+  # this takes a class name and returns all the tags attached to any object of that class
+  
+  named_scope :attached_to_a, lambda { |klass|
+    klass = klass.titleize
+    {
+      :joins => "INNER JOIN taggings as tt ON tt.tag_id = tags.id", 
+      :conditions => "tt.tagged_type = '#{klass}'",
+    }
+  }
+  
   def to_s
     title
   end
@@ -78,7 +90,7 @@ class Tag < ActiveRecord::Base
   end
   
   # Returns a list of all the tags that have been applied alongside _all_ of the supplied tags.
-  # used for faceting on tag pages
+  # used for faceting on library pages
   
   def self.coincident_with(tags)
     related_tags = []
