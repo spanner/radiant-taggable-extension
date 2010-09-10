@@ -1,7 +1,7 @@
 class TaggableExtension < Radiant::Extension
-  version "1.1"
-  description "General purpose tagging and taxonomy extension: more versatile but less immediately useful than the tags extension"
-  url "http://spanner.org/radiant/taggable"
+  version "1.2.0"
+  description "General purpose tagging and retrieval extension: more versatile but less focused than the tags extension"
+  url "http://github.com/spanner/radiant-taggable-extension"
     
   def activate
     ActiveRecord::Base.send :include, TaggableModel                     # provide is_taggable for everything but don't call it for anything
