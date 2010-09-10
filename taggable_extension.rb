@@ -2,18 +2,7 @@ class TaggableExtension < Radiant::Extension
   version "1.1"
   description "General purpose tagging and taxonomy extension: more versatile but less immediately useful than the tags extension"
   url "http://spanner.org/radiant/taggable"
-  
-  define_routes do |map|
-    map.namespace :admin do |admin|
-      admin.resources :tags, :collection => {:cloud => :get}
-    end
-  end
-  
-  extension_config do |config|
-    # some of the retrieval mechanisms need to support pagination
-    config.gem 'will_paginate', :version => '~> 2.3.11', :source => 'http://gemcutter.org'
-  end
-  
+    
   def activate
     ActiveRecord::Base.send :include, TaggableModel                     # provide is_taggable for everything but don't call it for anything
     Page.send :is_taggable                                              # make pages taggable 

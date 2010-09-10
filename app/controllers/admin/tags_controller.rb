@@ -5,6 +5,10 @@ class Admin::TagsController < Admin::ResourceController
     response_for :plural
   end
   
+  def show
+    @tag = load_model
+  end
+  
   def cloud
     @tags = Tag.sized(Tag.with_count)
     response_for :plural

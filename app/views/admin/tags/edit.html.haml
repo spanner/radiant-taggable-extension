@@ -4,8 +4,6 @@
   - main.edit_header do
     %h1
       Edit Tag
-    %p
-      The description you enter here will be dropped into the top of the tag page (above the list of tagged items) when there eventually is one.
     
   - main.edit_form do
     - form_for :tag, :url => admin_tag_path(@tag), :html => { :method => "put", :multipart => true } do |form|

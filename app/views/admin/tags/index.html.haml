@@ -31,22 +31,21 @@
             - tbody.usage_cell do
               %td.tag-usage
                 - if tag.use_count.to_i > 0
-                  = tag.use_count
-                  = pluralize(tag.use_count.to_i, 'item')
+                  = link_to "#{tag.use_count} #{pluralize(tag.use_count.to_i, 'item')}", admin_tag_url(tag)
                 - else
                   \-
 
             - tbody.modify_cell do
-              %td.remove
-                = link_to "remove", admin_tag_url(tag), :method => 'delete'
+              %td.actions
+                = link_to image('minus') + ' ' + t('remove'), remove_admin_tag_url(tag), :class => "action"
  
 - render_region :bottom do |bottom|
   - bottom.new_button do
     #actions
       %ul
         %li= link_to image('plus') + " " + "new tag", new_admin_tag_url
-        %li= link_to "tag list", cloud_admin_tags_url, :class => 'minor'
-        %li= link_to "tag cloud", admin_tags_url, :class => 'minor'
+        %li= link_to "tag list", admin_tags_url, :class => 'minor'
+        %li= link_to "tag cloud", cloud_admin_tags_url, :class => 'minor'
    
 %script{ :type => "text/javascript"}
   // <! [CDATA[

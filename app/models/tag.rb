@@ -5,7 +5,8 @@ class Tag < ActiveRecord::Base
   belongs_to :created_by, :class_name => 'User'
   belongs_to :updated_by, :class_name => 'User'
   has_many :taggings, :dependent => :destroy
-  is_site_scoped if defined? ActiveRecord::SiteNotFound
+  is_site_scoped if respond_to? :is_site_scoped
+  has_site if respond_to? :has_site
 
   # this is useful when we need to go back and add popularity to an already defined list of tags
   
@@ -56,7 +57,7 @@ class Tag < ActiveRecord::Base
   # this takes a class name and returns all the tags attached to any object of that class
   
   named_scope :attached_to_a, lambda { |klass|
-    klass = klass.titleize
+    klass = klass.to_s.titleize
     {
       :joins => "INNER JOIN taggings as tt ON tt.tag_id = tags.id", 
       :conditions => "tt.tagged_type = '#{klass}'",
@@ -79,6 +80,10 @@ class Tag < ActiveRecord::Base
     taggings.map {|t| t.tagged}
   end
   
+  def pages
+    Page.from_tags([self])
+  end
+  
   # Returns a list of all the tags that have been applied alongside this one.
   
   def coincident_tags
@@ -90,7 +95,9 @@ class Tag < ActiveRecord::Base
   end
   
   # Returns a list of all the tags that have been applied alongside _all_ of the supplied tags.
-  # used for faceting on library pages
+  # used to offer reductive facets on library pages
+  # not very efficient at the moment, largely thanks to polymorphic tagging relationship
+  # TODO: omit tags with no reductive power (ie applied to all the tagged items)
   
   def self.coincident_with(tags)
     related_tags = []

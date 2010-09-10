@@ -1,0 +1,32 @@
+- include_stylesheet 'admin/tags' 
+
+- render_region :main do |main|
+  - main.show_header do
+    %h1
+      Tag:
+      = link_to @tag.title, edit_admin_tag_url(@tag)
+    - if @tag.description
+      %p
+        = @tag.description
+
+  - main.show_pages do
+    - page_taggings = @tag.taggings.of_a :page
+    - if page_taggings.any?
+      %h2
+        Tagged pages
+      %table.index
+        - page_taggings.each do |tagging|
+          - page = tagging.tagged
+          - dom_id = "tagging_#{tagging.id}"
+          %tr.page.level-1{:id => dom_id}
+            %td{:style => 'width: 48px'}
+              = link_to image('page', :class => "icon"), page.url
+            %td.name
+              = link_to %{ <span class="title">#{ h(page.title) }</span>}, page.url
+            %td.actions
+              = link_to_remote image('minus') + ' detach', |
+                :html => { :class => "action", :title => "Detach tag from page" }, |
+                :url => admin_tagging_url(tagging), :method => :delete, |
+                :after => "Effect.Fade('#{dom_id}', { duration: 0.5 })", |
+                :complete => "Element.remove('#{dom_id}');"
+

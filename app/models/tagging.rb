@@ -29,6 +29,17 @@ class Tagging < ActiveRecord::Base
     }
   }
   
+  # this takes a class name and returns all the taggings of that class
+  # eg. @tag.taggings.of_a('page')
+  
+  named_scope :of_a, lambda { |klass|
+    klass = klass.to_s.titleize
+    {
+      :conditions => "tagged_type = '#{klass}'",
+    }
+  }
+  
+  
   # good housekeeping idea from tags extension.
   # if all the taggings for a particular tag are deleted, we want to delete the tag too
   

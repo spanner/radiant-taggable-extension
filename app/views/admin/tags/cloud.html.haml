@@ -6,7 +6,12 @@
 %p
   = link_to "&larr; view as list", admin_tags_url
 
-%ul.cloud
+%div.cloud
   - @tags.each do |tag|
-    %li{:style => "font-size: #{tag.cloud_size.to_f * 2.5}em; opacity: #{tag.cloud_size};"}
-      = link_to tag.title, admin_tag_url(tag)
+    = link_to tag.title, admin_tag_url(tag), :style => "font-size: #{tag.cloud_size.to_f * 2.5}em;"
+    
+#actions
+  %ul
+    %li= link_to image('plus') + " " + "new tag", new_admin_tag_url
+    %li= link_to "tag list", admin_tags_url, :class => 'minor'
+    %li= link_to "tag cloud", cloud_admin_tags_url, :class => 'minor'
