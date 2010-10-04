@@ -24,7 +24,8 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
           :joins => "INNER JOIN taggings as tt on tt.tagged_id = #{self.table_name}.id AND tt.tagged_type = '#{self.to_s}'", 
           :conditions => ["tt.tag_id in(#{tags.map{ '?' }.join(',')})"] + tags.map(&:id),
           :group => column_names.map { |n| table_name + '.' + n }.join(','),    # postgres is strict and requires that we group by all selected (but not aggregated) columns
-          :order => "count(tt.id) DESC"
+          :order => "count(tt.id) DESC",
+          :readonly => false
         }
       }
 
@@ -33,7 +34,8 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
           :joins => "INNER JOIN taggings as tt on tt.tagged_id = #{self.table_name}.id AND tt.tagged_type = '#{self.to_s}'", 
           :conditions => ["tt.tag_id in(#{tags.map{ '?' }.join(',')})"] + tags.map(&:id),
           :group => column_names.map { |n| table_name + '.' + n }.join(','),    # postgres is strict and requires that we group by all selected (but not aggregated) columns
-          :having => "count(tt.id) >= #{tags.length}"
+          :having => "count(tt.id) >= #{tags.length}",
+          :readonly => false
         }
       } do
         # count is badly sugared here: it omits the group and having clauses.

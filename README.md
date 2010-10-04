@@ -10,7 +10,7 @@ This extension differs from `tags` in a few ways that matter to me but may not t
 * We replace the keywords mechanism on pages rather than adding another one.
 * Anything can be tagged. By default we only do pages but other extensions can participate with a single line in a model class. See the [taggable_events](https://github.com/spanner/radiant-taggable_events-extension) extension for a minimal example or just put `is_taggable` at the top of a model class and see what happens.
 * We don't use `has_many_polymorphs` (it burns!)
-* Or any of the tagging libraries: it only takes a few named_scopes
+* Or any of the tagging libraries: it only takes a few scopes
 * it's multi-site compatible: if our fork is installed then you get site-scoped tags and taggings.
 
 When you first install the extension you shouldn't see much difference: all we do out of the box is to take over (and make more prominent) the keywords field in the page-edit view.
@@ -81,7 +81,7 @@ Put this in your layout:
 	  <ul>
 	    <r:related_pages.each>
 	      <li><r:link /></li>
-	    <r:related_pages.each>
+	    </r:related_pages.each>
 	  </ul>
 	</r:if_tags>
 
@@ -100,7 +100,6 @@ Seek venture capital immediately.
 ## Requirements
 
 * Radiant 0.8.1
-* `will_paginate` gem
 
 This is no longer compatible with 0.7 because we're doing a lot of :having in the scopes and you need rails 2.3 for that.
 
@@ -121,5 +120,5 @@ Very likely. [Github issues](http://github.com/spanner/radiant-taggable-extensio
 ## Author and copyright
 
 * William Ross, for spanner. will at spanner.org
-* Copyright 2009 spanner ltd
+* Copyright 2008-2010 spanner ltd
 * released under the same terms as Rails and/or Radiant

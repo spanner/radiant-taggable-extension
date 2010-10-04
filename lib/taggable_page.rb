@@ -17,7 +17,6 @@ module TaggablePage      # for inclusion into Page
   module ClassMethods
   end
 
-
   module InstanceMethods
 
     # note varying logic here: tag clouds are used differently when describing a group.
