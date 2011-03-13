@@ -83,7 +83,7 @@ module TaggableTags
   tag 'tags:cloud' do |tag|
     if tag.locals.tags && tag.locals.tags.length > 1
       options = tag.attr.dup
-      tag.locals.tags = Tag.for_cloud(tag.locals.tags).sort_by{|t| t.title.downcase}                          # nb. for_cloud immediately returns list if already sized
+      tag.locals.tags = Tag.for_cloud(tag.locals.tags).sort
       result = []
       result << %{<div class="cloud">}
       tag.locals.tags.each do |t|
@@ -152,7 +152,7 @@ module TaggableTags
       tag.locals.page = found
     end
     raise TagError, "no page for tag_cloud" unless tag.locals.page
-    tag.locals.tags = tag.locals.page.tags_for_cloud(limit)   # page.tags_for_cloud does a lot of inheritance work
+    tag.locals.tags = tag.locals.page.tags_for_cloud(limit).sort   # page.tags_for_cloud does a lot of inheritance work
     tag.render('tags:cloud', options)
   end
 
@@ -176,7 +176,7 @@ module TaggableTags
       tag.locals.page = found
     end
     raise TagError, "no page for tag_list" unless tag.locals.page
-    tag.locals.tags = tag.locals.page.tags_for_cloud(limit)   # page.tags_for_cloud does a lot of inheritance work
+    tag.locals.tags = tag.locals.page.tags_for_cloud(limit).sort
     tag.render('tags:list', options)
   end
   

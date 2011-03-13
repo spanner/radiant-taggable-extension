@@ -1,5 +1,4 @@
 class Tag < ActiveRecord::Base
-
   attr_accessor :cloud_band, :cloud_size
   
   belongs_to :created_by, :class_name => 'User'
@@ -63,6 +62,10 @@ class Tag < ActiveRecord::Base
       :conditions => "tt.tagged_type = '#{klass}'",
     }
   }
+  
+  def <=>(othertag)
+    String.natcmp(self.title, othertag.title)
+  end
   
   def to_s
     title

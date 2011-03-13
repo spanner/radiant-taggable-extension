@@ -21,6 +21,20 @@ describe Tag do
     tags[2].created_at.should be_close((Time.now).utc, 10.seconds)
   end
   
+  it "should stringify as title" do
+    "#{tags(:colourless)}".should == 'colourless'
+  end
+
+  it "should <=> by title" do
+    tags = Tag.from_list('ideas,colourless,lifebelt')
+    tags.sort.first.should == tags(:colourless)
+  end
+
+  it "should sort tags naturally" do
+    tags = Tag.from_list('item2, item11, item13, item20, item1, item0')
+    tags.sort.join(' ').should == %{item0 item1 item2 item11 item13 item20}
+  end
+  
   describe "instantiated" do
     before do
       @tag = tags(:sleep)
