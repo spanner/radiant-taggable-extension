@@ -86,7 +86,7 @@ module TaggableTags
       tag.locals.tags = Tag.for_cloud(tag.locals.tags).sort
       result = []
       result << %{<div class="cloud">}
-      tag.locals.tags.each do |t|
+      tag.locals.tags.sort.each do |t|
         tag.locals.tag = t
         result << tag.render("tag:link", options.merge('style' => "font-size: #{t.cloud_size.to_f * 2.5}em;"))
       end 

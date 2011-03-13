@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{radiant-taggable-extension}
-  s.version = "1.2.1"
+  s.version = "1.2.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["spanner"]
-  s.date = %q{2010-10-04}
+  s.date = %q{2011-03-13}
   s.description = %q{General purpose tagging extension: more versatile but less focused than the tags extension}
   s.email = %q{will@spanner.org}
   s.extra_rdoc_files = [
@@ -34,16 +34,16 @@ Gem::Specification.new do |s|
      "config/routes.rb",
      "db/migrate/001_create_tags.rb",
      "db/migrate/002_import_keywords.rb",
+     "lib/natcmp.rb",
+     "lib/radiant-taggable-extension.rb",
      "lib/taggable_admin_page_controller.rb",
      "lib/taggable_admin_ui.rb",
      "lib/taggable_model.rb",
      "lib/taggable_page.rb",
      "lib/taggable_tags.rb",
      "lib/tasks/taggable_extension_tasks.rake",
-     "pkg/radiant-taggable-extension-1.2.0.gem",
      "public/images/admin/new-tag.png",
      "public/images/admin/tag.png",
-     "public/images/furniture/detag.png",
      "public/stylesheets/admin/tags.css",
      "public/stylesheets/sass/tagcloud.sass",
      "radiant-taggable-extension.gemspec",

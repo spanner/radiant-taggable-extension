@@ -1,7 +1,7 @@
 class Admin::TagsController < Admin::ResourceController
   
   def index 
-    @tags = Tag.with_count
+    @tags = Tag.with_count.sort
     response_for :plural
   end
   
@@ -10,7 +10,7 @@ class Admin::TagsController < Admin::ResourceController
   end
   
   def cloud
-    @tags = Tag.sized(Tag.with_count)
+    @tags = Tag.sized(Tag.with_count).sort
     response_for :plural
   end
     
