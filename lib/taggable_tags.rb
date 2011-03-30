@@ -482,18 +482,16 @@ module TaggableTags
   tag 'tag:pages:each' do |tag|
     result = []
     options = children_find_options(tag)
-    paging = pagination_find_options(tag)
-    Rails.logger.warn "!!! tag:pages:each: options are #{options.inspect}"
-    finder = Page.from_tags([tag.locals.tag]).scoped_by(options)
-    Rails.logger.warn "!!! tpe: finder is #{finder.inspect}"
-    tag.locals.pages = paging ? finder.paginate(options.merge(paging)) : finder.find(options)
+    tag.locals.pages = tag.locals.tag.pages.scoped(options)
+    if paging = pagination_find_options(tag)
+      tag.locals.pages = tag.locals.pages.paginate(paging)
+    end
     tag.locals.pages.each do |page|
       tag.locals.page = page
       result << tag.expand
     end
     result
   end
-
 
 
 private
