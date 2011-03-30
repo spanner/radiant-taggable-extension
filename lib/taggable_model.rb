@@ -19,6 +19,15 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
       has_many :taggings, :as => :tagged
       has_many :attached_tags, :through => :taggings, :source => :tag    # can't be just has_many :tags because that stomps on the radius tags in Page.
       
+      named_scope :from_tag, lambda { |tag|
+        tag = Tag.find_by_title(tag) unless tag.is_a? Tag
+        {
+          :joins => "INNER JOIN taggings as tt on tt.tagged_id = #{self.table_name}.id AND tt.tagged_type = '#{self.to_s}'", 
+          :conditions => ["tt.tag_id = ?", tag.id],
+          :readonly => false
+        }
+      }
+
       named_scope :from_tags, lambda { |tags| 
         {
           :joins => "INNER JOIN taggings as tt on tt.tagged_id = #{self.table_name}.id AND tt.tagged_type = '#{self.to_s}'", 
@@ -46,11 +55,9 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
         end
       end
       
-      # this sets up eg Taggings.of_model
-      # and then uses that to define instance methods in Tag:
-      # tag.models
-      # tag.models_count
-      Tag.define_class_retrieval_methods(self.to_s)
+      # creates eg. tag.pages, tag.assets
+      # (returning the from_tag scope defined above)
+      Tag.define_retrieval_methods(self.to_s)
       
       class_eval {
         extend TaggableModel::TaggableClassMethods
@@ -65,7 +72,9 @@ module TaggableModel      # for inclusion into ActiveRecord::Base
 
   module TaggableClassMethods
     def tagged_with(somewords=[])
-      if somewords.is_a?(Array)
+      if somewords.is_a?(Tag)
+        self.from_tag(somewords)
+      elsif somewords.is_a?(Array)
         self.from_all_tags(somewords)
       else
         self.from_all_tags( Tag.from_list(somewords) )

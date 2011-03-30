@@ -1,4 +1,5 @@
 class Admin::TagsController < Admin::ResourceController
+  helper :taggable
   
   def index 
     @tags = Tag.with_count.sort

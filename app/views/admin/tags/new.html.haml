@@ -1,4 +1,6 @@
-- include_stylesheet 'admin/tags' 
+- @page_title = "New tag" + ' - ' + default_page_title
+- include_stylesheet 'admin/taggable'
+- include_javascript 'admin/taggable'
 
 - render_region :main do |main|
   - main.edit_header do
@@ -9,5 +11,4 @@
       If you'd like a bit more control than that, you can also create and describe tags one at a time here:
 
   - main.edit_form do
-    - form_for :tag, :url => admin_tags_path, :html => { :method => "post", :multipart => true } do |form|
-      = render :partial => 'form', :object => form
+    = render :partial => 'form'

@@ -2,52 +2,97 @@ module TaggableTags
   include Radiant::Taggable
   
   class TagError < StandardError; end
-
-  # tag sets.
+      
+  ################# general purpose lister utilities
+                  # can be contained or nested within any list-defining tag
+                  # eg.<r:structural_tags:each_tag>...
+                  # or just.<r:tags:each_tag>... (aka r:tags:each)
 
   desc %{
-    The root 'tags' is not usually called directly. 
-    All it does is default to the list of page tags.
-    Most tags:* methods are called indirectly: eg 'requested_tags:list'
-    will set context to the requested tags and then render tags:list.
-    In that case we just oblige by expanding.
-  }
-  tag 'tags' do |tag|
-    tags ||= _get_tags(tag);
-    tag.expand
-  end
-  
-  desc %{
-    Contents are rendered only if a set of tags is available.
+    Contents are rendered only if tags are available to display.
     
-    *Usage:* 
     <pre><code><r:if_tags>...</r:if_tags></code></pre>
+
+    Can also be nested inside a set-definition container tag:
+
+    <pre><code><r:structural_tags:if_tags>...</r:structural_tags:if_tags></code></pre>
   }    
   tag 'if_tags' do |tag|
+    tag.locals.tags ||= _get_tags(tag)
     tag.expand if tag.locals.tags && tag.locals.tags.any?
   end
   
   desc %{
-    Contents are rendered only if no set of tags is available.
-    
-    *Usage:* 
-    <pre><code><r:unless_tags>...</r:unless_tags></code></pre>
+    Contents are rendered only if no tags are available.
+    Can also be nested inside a set-definition container tag.
   }    
   tag 'unless_tags' do |tag|
+    tag.locals.tags ||= _get_tags(tag)
     tag.expand unless tag.locals.tags && tag.locals.tags.any?
   end
-  
-  ################# list-display tags: take a set and display it somehow. Because they're in the tags: namespace they default to tag.locals.page.tags.
 
   desc %{
-    Summarises in a sentence the list of tags currently active.
-
-    *Usage:* 
-    <pre><code>Pages tagged with <r:tags:summary />:</code></pre>
-    
-    And the output would be "Pages tagged with tag1, tag2 and tag3:".
+    Loops through the current list of tags.
+    Only works when nested within a set-defining tag.
   }    
-  tag 'tags:summary' do |tag|
+  tag "each_tag" do |tag|
+    Rails.logger.warn ">>  each_tag. tag.locals.tags is #{tag.locals.tags.inspect}"
+    result = []
+    tag.locals.tags.each do |item|
+      tag.locals.tag = item
+      result << tag.expand
+    end 
+    result
+  end
+
+  desc %{
+    Displays a UL of the current list of tags.
+    Only works when nested within a set-defining tag.
+  }    
+  tag "tag_list" do |tag|
+    if tag.locals.tags && tag.locals.tags.any?
+      options = tag.attr.dup
+      show_checkboxes = (options.delete('checklist') == 'true')
+      listclass = options.delete('listclass') || 'taglist'
+      result = %{<ul class="#{listclass}">}
+      tag.locals.tags.each do |t|
+        tag.locals.tag = t
+        result << %{<li>#{tag.render('tag_link', options)}</li>}
+      end 
+      result << "</ul>"
+      result
+    else
+      "No tags"
+    end
+  end
+
+  desc %{
+    Builds a cloud to display the current list of tags.
+    Only works when nested within a set-defining tag.
+    For simple page tag-clouding use r:tags:cloud.
+  }    
+  tag "tag_cloud" do |tag|
+    if tag.locals.tags && tag.locals.tags.length > 1
+      options = tag.attr.dup
+      tag.locals.tags = Tag.for_cloud(tag.locals.tags).sort
+      result = []
+      result << %{<div class="cloud">}
+      tag.locals.tags.sort.each do |t|
+        tag.locals.tag = t
+        result << tag.render("tag_link", options.merge('style' => "font-size: #{t.cloud_size.to_f * 2.5}em;"))
+      end 
+      result << "</div>"
+      result.join(" ")
+    else
+      "No tags"
+    end
+  end
+
+  desc %{
+    Summarises in a sentence the current list of tags.
+    Only works when nested within a set-defining tag.
+  }    
+  tag "tag_summary" do |tag|
     if tag.locals.tags && tag.locals.tags.any?
       options = tag.attr.dup
       tag.locals.tags.map { |t|
@@ -59,65 +104,58 @@ module TaggableTags
     end
   end
 
-  desc %{
-    Cycles through all tags in context. You can also specify a set of tags, which is occasionally 
-    a useful shortcut for building a topic list.
 
-    *Usage:* 
-    <pre><code><r:tags:each tags="foo, bar">...</r:tags:each></code></pre>
-  }    
+  ################# set-defining tags are meant to contain clouds and summaries and lists and so on
+                  # there are many more in the library
+                  
+
+  tag 'structural_tags' do |tag|
+    tag.locals.tags = tag.locals.page.attached_tags.structural.visible
+    tag.expand
+  end
+
+  tag 'all_structural_tags' do |tag|
+    tag.locals.tags = Tag.structural.visible
+    tag.expand
+  end
+
+  tag 'descriptive_tags' do |tag|
+    tag.locals.tags = tag.locals.page.attached_tags.descriptive.visible
+    tag.expand
+  end
+
+  tag 'all_descriptive_tags' do |tag|
+    tag.locals.tags = Tag.descriptive.visible
+    tag.expand
+  end
+
+  tag 'hidden_tags' do |tag|
+    tag.locals.tags = tag.locals.page.attached_tags.hidden
+    tag.expand
+  end
+
+  tag 'all_hidden_tags' do |tag|
+    tag.locals.tags = Tag.hidden.visible
+    tag.expand
+  end
+
+  ################# page-tag shortcuts call the above listers and clouders after first defaulting to 
+                  # current page tags (or in the case of the clouds and lists, page and descendants)
+
+  tag 'tags' do |tag|
+    Rails.logger.warn ">>  tags. tag.locals.tags is #{tag.locals.tags.inspect}"
+    tag.locals.tags ||= _get_tags(tag)
+    tag.expand
+  end
+
+  tag 'tags:summary' do |tag|
+    tag.render('tag_summary', tag.attr.dup)
+  end
+
   tag 'tags:each' do |tag|
-    result = []
-    tag.locals.tags.each do |item|
-      tag.locals.tag = item
-      result << tag.expand
-    end 
-    result
+    Rails.logger.warn ">>  tags:each. tag.locals.tags is #{tag.locals.tags.inspect}"
+    tag.render('each_tag', tag.attr.dup, &tag.block)
   end
-
-
-  # These are never called directly: but are separated here to dry out the tag handling
-  # see r:tag_cloud, or in the library extension, compound forms like r:coincident_tags:tag_cloud and r:requested_tags:list
-  # same goes for r:tags:summary but that's occasionally useful on a page too.
-  
-  tag 'tags:cloud' do |tag|
-    if tag.locals.tags && tag.locals.tags.length > 1
-      options = tag.attr.dup
-      tag.locals.tags = Tag.for_cloud(tag.locals.tags).sort
-      result = []
-      result << %{<div class="cloud">}
-      tag.locals.tags.sort.each do |t|
-        tag.locals.tag = t
-        result << tag.render("tag:link", options.merge('style' => "font-size: #{t.cloud_size.to_f * 2.5}em;"))
-      end 
-      result << "</div>"
-      result.join(" ")
-    else
-      "No tags"
-    end
-  end
-  
-  tag 'tags:list' do |tag|
-    if tag.locals.tags && tag.locals.tags.any?
-      options = tag.attr.dup
-      show_checkboxes = (options.delete('checklist') == 'true')
-      listclass = options.delete('listclass') || 'taglist'
-      result = %{<ul class="#{listclass}">}
-      tag.locals.tags.each do |t|
-        tag.locals.tag = t
-        result << %{<li>#{tag.render('tag:link', options)}</li>}
-      end 
-      result << "</ul>"
-      result
-    else
-      "No tags"
-    end
-  end
-
-
-
-  ################# page-candy: these are high level tags that bring in a whole block of stuff. 
-                  # most can be built out of the smaller tags if you need them to work differently
 
   desc %{
     Returns a tag-cloud showing all the tags attached to this page and its descendants, 
@@ -141,9 +179,9 @@ module TaggableTags
         
     As usual you can limit the size of the cloud (the most popular will be shown) and set the destination of tag links:
     
-    <pre><code><r:tag_cloud limit="200" linkto="/archive" /></code></pre>
+    <pre><code><r:tags:cloud limit="200" linkto="/archive" /></code></pre>
   }    
-  tag 'tag_cloud' do |tag|
+  tag 'tags:cloud' do |tag|
     options = tag.attr.dup
     limit = options.delete('limit')
     if url = options.delete('url')
@@ -153,12 +191,12 @@ module TaggableTags
     end
     raise TagError, "no page for tag_cloud" unless tag.locals.page
     tag.locals.tags = tag.locals.page.tags_for_cloud(limit).sort   # page.tags_for_cloud does a lot of inheritance work
-    tag.render('tags:cloud', options)
+    tag.render('tag_cloud', options)
   end
 
   desc %{
     Returns a list of tags showing all the tags attached to this page and its descendants. It's essentially the same
-    as the tag cloud without the band formatting, but accepts the same options as tags:list.
+    as the tag cloud without the band formatting.
     
     *Usage:* 
     <pre><code><r:tag_list /></code></pre>
@@ -167,7 +205,7 @@ module TaggableTags
     
     <pre><code><r:tag_list limit="200" linkto="/archive" /></code></pre>    
   }    
-  tag 'tag_list' do |tag|
+  tag 'tags:list' do |tag|
     options = tag.attr.dup
     limit = options.delete('limit')
     if url = options.delete('url')
@@ -182,20 +220,21 @@ module TaggableTags
   
   
   
+  
+  
+  
   ################# tagged pages. Other extensions define similar tags for eg tagged assets.
-  
-  # general purpose pages lister
-  
-  desc %{
-    This is a general purpose page lister. It wouldn't normally be accessed directly but a lot of other tags make use of it.
-  }
+    
   tag 'page_list' do |tag|
     raise TagError, "no pages for page_list" unless tag.locals.pages
     result = []
-    tag.locals.pages.each do |page|
-      tag.locals.page = page
+    options = children_find_options(tag)
+    paging = pagination_find_options(tag)
+    displayed_children = paging ? tag.locals.pages.paginate(options.merge(paging)) : tag.locals.pages.all(options)
+    displayed_children.each do |item|
+      tag.locals.page = item
       result << tag.expand
-    end 
+    end
     result
   end
   
@@ -203,23 +242,27 @@ module TaggableTags
     Lists all the pages associated with a set of tags, in descending order of relatedness.
     
     *Usage:* 
-    <pre><code><r:tags:pages:each>...</r:tags:pages:each></code></pre>
+    <pre><code><r:tagged_pages:each>...</r:tags:pages:each></code></pre>
   }
-  tag 'tags:pages' do |tag|
+  tag 'tagged_pages' do |tag|
     tag.locals.pages = Page.from_tags(tag.locals.tags)
     tag.expand
   end
-  tag 'tags:pages:each' do |tag|
-    tag.render('pages:each', tag.attr.dup, &tag.block)
+  
+  tag 'tagged_pages:each' do |tag|
+    tag.render('page_list', tag.attr.dup, &tag.block)
   end
   
   desc %{
     Renders the contained elements only if there are any pages associated with the current set of tags.
 
-    *Usage:* 
-    <pre><code><r:tags:if_pages>...</r:tags:if_pages></code></pre>
+    <pre><code><r:if_tagged_pages>...</r:if_tagged_pages></code></pre>
+    
+    Can be nested in any set-defining tag:
+    
+    <pre><code><r:requested_tags:if_tagged_pages>...</r:requested_tags:if_tagged_pages></code></pre>
   }
-  tag "tags:if_pages" do |tag|
+  tag "if_tagged_pages" do |tag|
     tag.locals.pages = Page.from_tags(tag.locals.tags)
     tag.expand if tag.locals.pages.to_a.any?
   end
@@ -228,7 +271,7 @@ module TaggableTags
     Renders the contained elements only if there are no pages associated with the current set of tags.
 
     *Usage:* 
-    <pre><code><r:tags:unless_pages>...</r:tags:unless_pages></code></pre>
+    <pre><code><r:unless_tagged_pages>...</r:unless_tagged_pages></code></pre>
   }
   tag "tags:unless_pages" do |tag|
     tag.locals.pages = Page.from_tags(tag.locals.tags)
@@ -244,14 +287,12 @@ module TaggableTags
     <pre><code><r:related_pages:each>...</r:related_pages:each></code></pre>
   }
   tag 'related_pages' do |tag|
-    raise TagError, "page must be defined for related_pages tag" unless tag.locals.page
     tag.locals.pages = tag.locals.page.related_pages
     tag.expand
   end
   tag 'related_pages:each' do |tag|
-    tag.render('pages:each', tag.attr.dup, &tag.block)
+    tag.render('page_list', tag.attr.dup, &tag.block)
   end
-  
   
   desc %{
     Shows a link to the target page with a (non-linked) breadcrumb trail to give it context.
@@ -279,6 +320,18 @@ module TaggableTags
     breadcrumbs.join(separator)
   end
 
+  tag 'tags:pages' do |tag|
+    tag.render('tagged_pages', tag.attr.dup, &tag.block)
+  end
+  
+  tag "tags:if_pages" do |tag|
+    tag.render('if_tagged_pages', tag.attr.dup, &tag.block)
+  end
+
+  tag "tags:unless_pages" do |tag|
+    tag.render('unless_tagged_pages', tag.attr.dup, &tag.block)
+  end
+  
 
 
   ################# single tag expansion for simple lists of tagged items or for customised display of each item in a list or cloud context
@@ -326,8 +379,21 @@ module TaggableTags
     <pre><code><r:tag:name /></code></pre>
   }    
   tag 'tag:name' do |tag|    
-    raise TagError, "tag must be defined for tag:title tag" unless tag.locals.tag
+    raise TagError, "tag must be defined for tag:name tag" unless tag.locals.tag
     tag.locals.tag.title
+  end
+
+  desc %{
+    Sets context to the page association of the current tag
+    (that is, the page towards which this tag is a pointer, if any)
+
+    If there is no page, nothing is displayed.
+    
+    <pre><code><r:tag:page><r:link /></r:tag:page></code></pre>
+  }    
+  tag 'tag:page' do |tag|    
+    raise TagError, "tag must be defined for tag:page tag" unless tag.locals.tag
+    tag.expand if tag.locals.page = tag.locals.tag.page
   end
 
   desc %{
@@ -338,10 +404,10 @@ module TaggableTags
     If no destination is specified we return a relative link to the escaped name of the tag.
     
     *Usage:* 
-    <pre><code><r:tag:link linkto='/library' /></code></pre>
+    <pre><code><r:tag_link linkto='/library' /></code></pre>
   }
-  tag 'tag:link' do |tag|
-    raise TagError, "tag must be defined for tag:link tag" unless tag.locals.tag
+  tag 'tag_link' do |tag|
+    raise TagError, "tag must be defined for tag_link tag" unless tag.locals.tag
     options = tag.attr.dup
     anchor = options['anchor'] ? "##{options.delete('anchor')}" : ''
     attributes = options.inject('') { |s, (k, v)| s << %{#{k.downcase}="#{v}" } }.strip
@@ -415,10 +481,16 @@ module TaggableTags
   end
   tag 'tag:pages:each' do |tag|
     result = []
-    tag.locals.tag.pages.each do |page|
+    options = children_find_options(tag)
+    paging = pagination_find_options(tag)
+    Rails.logger.warn "!!! tag:pages:each: options are #{options.inspect}"
+    finder = Page.from_tags([tag.locals.tag]).scoped_by(options)
+    Rails.logger.warn "!!! tpe: finder is #{finder.inspect}"
+    tag.locals.pages = paging ? finder.paginate(options.merge(paging)) : finder.find(options)
+    tag.locals.pages.each do |page|
       tag.locals.page = page
       result << tag.expand
-    end 
+    end
     result
   end
 
@@ -429,6 +501,8 @@ private
   def _get_tag(tag, options)
     if title = options.delete('title')
       tag.locals.tag ||= Tag.find_by_title(title)
+    elsif id = options.delete('id')
+      tag.locals.tag ||= Tag.find_by_id(id)
     end
     if tag.locals.page.respond_to? :requested_tags
       tag.locals.tag ||= tag.locals.page.requested_tags.first
@@ -441,16 +515,17 @@ private
   # but change is likely here and anything not documented shouldn't be relied upon.
   
   def _get_tags(tag)
+    Rails.logger.warn "<<  _get_tags"
     tags = if tag.attr['tags'] && !tag.attr['tags'].blank?
       Tag.from_list(tag.attr['tags'], false)    # false parameter -> not to create missing tags
     elsif tag.locals.page.respond_to?(:requested_tags)
       tag.locals.page.requested_tags
     elsif tag.locals.page
-      tag.locals.page.attached_tags
+      tag.locals.page.attached_tags.visible
     else
       []
     end
-    tags = tags.uniq.select{|t| !t.nil? }
+    tag.locals.tags = tags.uniq.compact
   end  
 
 end

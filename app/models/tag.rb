@@ -3,9 +3,35 @@ class Tag < ActiveRecord::Base
   
   belongs_to :created_by, :class_name => 'User'
   belongs_to :updated_by, :class_name => 'User'
+  belongs_to :page
   has_many :taggings, :dependent => :destroy
-  is_site_scoped if respond_to? :is_site_scoped
+  
   has_site if respond_to? :has_site
+
+  # returns the subset of tags meant for public display and selection
+  
+  named_scope :visible, {
+    :conditions => ['visible = 1']
+  }
+
+  # returns the set of hidden editorial tags used for linking and labelling but
+  # not meant for public display.
+
+  named_scope :hidden, {
+    :conditions => ['visible = 0']
+  }
+  
+  # returns the subset of structural tags (ie, those that are page links)
+  
+  named_scope :structural, {
+    :conditions => ['page_id IS NOT NULL']
+  }
+
+  # returns the subset of tags without page links
+  
+  named_scope :descriptive, {
+    :conditions => ['page_id IS NULL']
+  }
 
   # this is useful when we need to go back and add popularity to an already defined list of tags
   
@@ -64,12 +90,19 @@ class Tag < ActiveRecord::Base
   }
   
   def <=>(othertag)
-    String.natcmp(self.title, othertag.title)
+    String.natcmp(self.title, othertag.title)   # natural sort method defined in lib/natcomp.rb
   end
   
   def to_s
     title
   end
+  
+  # returns true if this tag points to a page
+  
+  def structural
+    !page_id.nil?
+  end
+  alias :structural? :structural
   
   # Standardises formatting of tag name in urls
   
@@ -82,6 +115,8 @@ class Tag < ActiveRecord::Base
   def tagged
     taggings.map {|t| t.tagged}
   end
+  
+  # Returns a list of all the page tagged with this tag.
   
   def pages
     Page.from_tags([self])
@@ -100,7 +135,7 @@ class Tag < ActiveRecord::Base
   # Returns a list of all the tags that have been applied alongside _all_ of the supplied tags.
   # used to offer reductive facets on library pages
   # not very efficient at the moment, largely thanks to polymorphic tagging relationship
-  # TODO: omit tags with no reductive power (ie applied to all the tagged items)
+  # TODO: omit tags with no reductive power (ie those applied to all the tagged items)
   
   def self.coincident_with(tags)
     related_tags = []
@@ -155,6 +190,7 @@ class Tag < ActiveRecord::Base
     end
   end
   
+  # applies a more sophisticated logarithmic weighting algorithm to a set of tags.
   # derived from here:
   # http://stackoverflow.com/questions/604953/what-is-the-correct-algorthm-for-a-logarthmic-distribution-curve-between-two-poin
   
@@ -181,6 +217,7 @@ class Tag < ActiveRecord::Base
   end
   
   # takes a list of tags and reaquires it from the database, this time with incidence.
+  # cheap call because it returns immediately if the list is already cloudable.
   
   def self.for_cloud(tags)
     return tags if tags.empty? || tags.first.cloud_size
@@ -193,10 +230,10 @@ class Tag < ActiveRecord::Base
   
   # adds retrieval methods for a taggable class to this class and to Tagging.
   
-  def self.define_class_retrieval_methods(classname)
-    Tagging.send :named_scope, "of_#{classname.downcase.pluralize}".intern, :conditions => { :tagged_type => classname.to_s }
-    define_method("#{classname.downcase}_taggings") { self.taggings.send "of_#{classname.downcase.pluralize}".intern }
-    define_method("#{classname.downcase.pluralize}") { self.send("#{classname.to_s.downcase}_taggings".intern).map{|l| l.tagged} }
+  def self.define_retrieval_methods(classname)
+    define_method classname.downcase.pluralize.to_sym do
+      classname.constantize.send :from_tag, self
+    end
   end
       
 end

@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{radiant-taggable-extension}
-  s.version = "1.2.2"
+  s.version = "1.2.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["spanner"]
@@ -16,7 +16,8 @@ Gem::Specification.new do |s|
     "README.md"
   ]
   s.files = [
-    "README.md",
+    ".gitignore",
+     "README.md",
      "Rakefile",
      "VERSION",
      "app/controllers/admin/taggings_controller.rb",

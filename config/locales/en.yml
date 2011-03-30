@@ -1,0 +1,9 @@
+en:
+  tags: "Tags"
+  helpers:
+    label:
+      tag:  
+        structural: "Structural?"
+        page_id: "Pointer to page"
+        visible: "Visible?"
+        description: "Description (optional)"

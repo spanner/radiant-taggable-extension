@@ -1,4 +1,6 @@
-- include_stylesheet 'admin/tags' 
+- @page_title = 'Tag: ' + @tag.title + ' - ' + default_page_title
+- include_stylesheet 'admin/taggable'
+- include_javascript 'admin/taggable'
 
 - render_region :main do |main|
   - main.edit_header do
@@ -6,9 +8,4 @@
       Edit Tag
     
   - main.edit_form do
-    - form_for :tag, :url => admin_tag_path(@tag), :html => { :method => "put", :multipart => true } do |form|
-      = render :partial => 'form', :object => form
-
-    
-    
-    
+    = render :partial => 'form'

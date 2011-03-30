@@ -1,23 +1,37 @@
-= render_region :form_top
-- render_region :form do |form_region|
-  .form-area
-    - form_region.edit_name do
-      %p.title
-        = form.label :title
-        = form.text_field :title, :class => 'textbox', :maxlength => 255
+- form_for [:admin, @tag], :html => {'data-onsubmit_status' => onsubmit_status(@tag)} do |f|
+  = render_region :form_top
+  - render_region :form do |form_region|
+    .form-area
+      - form_region.edit_name do
+        %p.title
+          = f.label :title
+          = f.text_field :title, :class => 'textbox', :maxlength => 255
 
-    - form_region.edit_description do
-      %div
-        = form.label :description
-        = form.text_area :description, :class => "textarea", :style => "width: 100%"
+      - form_region.edit_role do
+        %p
+          = check_box_tag :structural, 1, @tag.structural?, {:class => 'toggle', :rel => 'toggle[pointer]'}
+          = f.label :structural, nil, :class => 'checkbox'
+        %div#pointer
+          %p
+            = f.label :page_id
+            = f.select :page_id, available_pointer_pages
+        
+      - form_region.edit_description do
+        %p
+          = f.check_box :visible, {:class => 'toggle', :rel => 'toggle[description]'}
+          = f.label :visible, nil, :class => 'checkbox'
+        %div#description
+          %p.description
+            = f.label :description
+            = f.text_area :description, :class => "textarea", :style => "width: 100%"
 
-- render_region :form_bottom do |form_bottom_region|
-  - form_bottom_region.edit_timestamp do
-    = updated_stamp @tag  
+  - render_region :form_bottom do |form_bottom_region|
+    - form_bottom_region.edit_timestamp do
+      = updated_stamp @tag  
 
-  - form_bottom_region.edit_buttons do
-    %p.buttons
-      = save_model_button(@tag)
-      = save_model_and_continue_editing_button(@tag)
-      or
-      = link_to "Cancel", admin_tags_url
+    - form_bottom_region.edit_buttons do
+      %p.buttons
+        = save_model_button(@tag)
+        = save_model_and_continue_editing_button(@tag)
+        or
+        = link_to "Cancel", admin_tags_url

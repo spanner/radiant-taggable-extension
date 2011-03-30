@@ -4,8 +4,8 @@ module TaggablePage      # for inclusion into Page
   # because of the page tree
   
   def self.included(base)
-
     base.class_eval {
+      has_one :pointer, :class_name => 'Tag'
       named_scope :children_of, lambda { |these|
         { :conditions => ["parent_id IN (#{these.map{'?'}.join(',')})", *these.map{|t| t.id}] }
       }
@@ -19,6 +19,10 @@ module TaggablePage      # for inclusion into Page
 
   module InstanceMethods
 
+    def has_pointer?
+      !pointer.nil?
+    end
+
     # note varying logic here: tag clouds are used differently when describing a group.
     # if only one object is relevant, all of its tags will be equally (locally) important. 
     # Presumably that cloud should show global tag importance.
@@ -26,7 +30,7 @@ module TaggablePage      # for inclusion into Page
     # probably want to show local tag importance, ie prominence within that list.
     
     def tags_for_cloud(limit=50, bands=6)
-      tags = Tag.attached_to(self.with_children).most_popular(limit)
+      tags = Tag.attached_to(self.with_children).visible.most_popular(limit)
       Tag.sized(tags, bands)
     end
     

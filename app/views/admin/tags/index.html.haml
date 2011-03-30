@@ -1,4 +1,7 @@
-- include_stylesheet 'admin/tags'
+- include_stylesheet 'admin/taggable'
+- include_javascript 'admin/taggable'
+
+- @page_title = t('tags') + ' - ' + default_page_title
 = render_region :top 
 
 #tags_table.outset
@@ -8,6 +11,8 @@
         - render_region :thead do |thead|
           - thead.title_header do
             %th.tag-title Title
+          - thead.link_header do
+            %th.tag-link Pointer
           - thead.description_header do
             %th.tag-description Description
           - thead.usage_header do
@@ -17,12 +22,19 @@
 
     %tbody
       - for tag in @tags 
-        %tr.node.level-1
+        %tr{:class => tag.visible? ? 'visible' : 'secret'}
           - render_region :tbody do |tbody|
             - tbody.title_cell do
               %td.tag-title
                 = link_to image('tag', :alt => ''), edit_admin_tag_url(:id => tag.id) 
                 = link_to tag.title, edit_admin_tag_url(:id => tag.id) 
+
+            - tbody.link_cell do
+              %td.tag-link
+                - if tag.page
+                  = link_to tag.page.title, tag.page.url
+                - else
+                  &mdash;
 
             - tbody.description_cell do
               %td.tag-description
@@ -44,10 +56,3 @@
     #actions
       %ul
         %li= link_to image('plus') + " " + "new tag", new_admin_tag_url
-        %li= link_to "tag list", admin_tags_url, :class => 'minor'
-        %li= link_to "tag cloud", cloud_admin_tags_url, :class => 'minor'
-   
-%script{ :type => "text/javascript"}
-  // <! [CDATA[
-  new RuledTable('tags')
-  //]

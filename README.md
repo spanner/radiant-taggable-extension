@@ -7,7 +7,9 @@ This is another way to apply tags to objects in your radiant site and retrieve o
 This extension differs from `tags` in a few ways that matter to me but may not to you:
 
 * We're not so focused on tag clouds - though you can still make them - but more on archival and linking functions.
-* We replace the keywords mechanism on pages rather than adding another one.
+* We subvert the keywords mechanism on pages rather than adding another one.
+* The tag-choosing and tag-removal interface is (about to be) quite nice.
+* It's editorially versatile: tags can be used as page pointers and their visibility is controllable
 * Anything can be tagged. By default we only do pages but other extensions can participate with a single line in a model class. See the [taggable_events](https://github.com/spanner/radiant-taggable_events-extension) extension for a minimal example or just put `is_taggable` at the top of a model class and see what happens.
 * We don't use `has_many_polymorphs` (it burns!)
 * Or any of the tagging libraries: it only takes a few scopes
