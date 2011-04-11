@@ -1,3 +1,5 @@
+require "text/metaphone"
+
 class Tag < ActiveRecord::Base
   attr_accessor :cloud_band, :cloud_size
   
@@ -5,6 +7,7 @@ class Tag < ActiveRecord::Base
   belongs_to :updated_by, :class_name => 'User'
   belongs_to :page
   has_many :taggings, :dependent => :destroy
+  before_save :calculate_metaphone
   
   has_site if respond_to? :has_site
 
@@ -86,6 +89,16 @@ class Tag < ActiveRecord::Base
     {
       :joins => "INNER JOIN taggings as tt ON tt.tag_id = tags.id", 
       :conditions => "tt.tagged_type = '#{klass}'",
+    }
+  }
+
+  # this should probably be sorted better but I want to keep it as quick an operation as possible
+  # so only the one query is allowed
+  
+  named_scope :suggested_by, lambda { |term|
+    metaphone = Text::Metaphone.metaphone(term)
+    {
+      :conditions => ["tags.title LIKE ? OR tags.metaphone LIKE ?", "%#{term}%", "&#{metaphone}%"]
     }
   }
   
@@ -235,6 +248,11 @@ class Tag < ActiveRecord::Base
       classname.constantize.send :from_tag, self
     end
   end
-      
+
+protected
+  
+  def calculate_metaphone
+    self.metaphone = Text::Metaphone.metaphone(self.title)
+  end
 end
 

@@ -1,28 +1,12 @@
-- content_for :page_css do
-  :sass 
-    p.title
-      :width 70%
-    p.keywords
-      :width 28%
-      :float right
-      :margin 0 1% 0 0
-    #content 
-      form
-        .keywords 
-          .textbox
-            :font-family Georgia, Palatino, "Times New Roman", Times, serif
-            :font-size 200%
-            :width 100%
-            :color #c00
-            :margin-top 4px
-    #attributes
-      :clear both
-            
+- include_stylesheet 'admin/taggable'
+- include_javascript 'autocomplete'
+- include_javascript 'admin/taggable'
+
 - fields_for :page, @page do |fields|
   %p.keywords
     %label{:for=>"page_keywords"}
-      Tags
-    = fields.text_field :keywords, :class => 'textbox'
+      =t('tags')
+    = fields.text_field :keywords, :class => 'textbox tagger'
   %p.title
     %label{:for=>"page_title"}= t('page_title')
     = fields.text_field :title, :class => 'textbox', :maxlength => 255
