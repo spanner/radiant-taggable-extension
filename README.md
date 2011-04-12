@@ -19,7 +19,12 @@ When you first install the extension you shouldn't see much difference: all we d
 
 ## New
 
-I've just stripped out quite a lot of display clutter in order to focus on the basic tagging mechanism here. Retrieval and display is now handled by the [library](http://example.com/) extension. The core radius tags remain here. Anything that used to refer to a tag page is probably now handled by the library page.
+The long-promised tag-suggester is there in a useable though slightly basic form. I would prefer it to display a list rather than populating
+the text box, but we're getting there. Migration is required for the metaphone support.
+
+I'm refactoring, or at least tidying up, the great clutter of tag tags. There's a lot more reuse in there now but the documentation may be out of date here and there. Bug reports very welcome.
+
+I've stripped out quite a lot of display clutter in order to focus on the basic tagging mechanism here. Retrieval and display is now handled by the [library](http://example.com/) extension. The core radius tags remain here. Anything that used to refer to a tag page is probably now handled by the library page.
 
 ## Status 
 
@@ -29,10 +34,11 @@ The underlying code is fairly well broken-in and has been in production for a co
 
 Not too bad, I think. Most of the heavy retrieval functions have been squashed down into single queries. Each of these:
 
-	Tag.most_popular(50)
-	Tag.coincident_with(tag1, tag2, tag3)
-	Page.tagged_with(tag1, tag2, tag3)
-	Page.related_pages 								# equivalent to Page.tagged_with(self.attached_tags) - [self]
+    Tag.most_popular(50)
+    Tag.coincident_with(tag1, tag2, tag3)
+    Page.tagged_with(tag1, tag2, tag3)
+    Page.related_pages                              # equivalent to Page.tagged_with(self.attached_tags) - [self]
+	Tag.suggested_by('stem')
 
 is handled in a single pass. 
 
@@ -46,26 +52,26 @@ This extension creates several radius tags. There are two kinds:
 
 are used in the usual to display the properties and associations of a given tag (which can be supplied to a library as a query parameter or just specified in the radius tag)
 
-	<r:tag:title />
-	<r:tag:description />
-	<r:tag:pages:each>...</r:tag:pages:each>
+    <r:tag:title />
+    <r:tag:description />
+    <r:tag:pages:each>...</r:tag:pages:each>
 
 currently only available in a tag cloud (or a `top_tags` list):
 
-	<r:tag:use_count />
+    <r:tag:use_count />
 
 ### presenting page information
 
 These display the tag-associations of a given page.
 
-	<r:if_tags>...</r:if_tags>
-	<r:unless_tags>...</r:unless_tags>
-	<r:tags:each>...</r:tags:each>
-	<r:related_pages:each>...</r:related_pages:each>
-	<r:tag_cloud [url=""] />
+    <r:if_tags>...</r:if_tags>
+    <r:unless_tags>...</r:unless_tags>
+    <r:tags:each>...</r:tags:each>
+    <r:related_pages:each>...</r:related_pages:each>
+    <r:tag_cloud [url=""] />
 
 The library extension adds a lot more ways to retrieve lists of tags and tagged objects, and to work with assets in the same way as we do here with pages.
-	
+    
 ## Note about tag cloud prominence
 
 The calculation of prominence here applies a logarithmic curve to create a more even distribution of weight. It's continuous rather than banded, and sets the font size and opacity for each tag in a style attribute.
@@ -78,27 +84,27 @@ Add tags to your pages by putting a comma-separated list in the 'keywords' box. 
 
 Put this in your layout:
 
-	<r:if_tags>
-	  <h3>See also</h3>
-	  <ul>
-	    <r:related_pages.each>
-	      <li><r:link /></li>
-	    </r:related_pages.each>
-	  </ul>
-	</r:if_tags>
+    <r:if_tags>
+      <h3>See also</h3>
+      <ul>
+        <r:related_pages.each>
+          <li><r:link /></li>
+        </r:related_pages.each>
+      </ul>
+    </r:if_tags>
 
 ### To display a tag cloud on a section front page:
 
 Include the sample tagcloud.css in your styles and put this somewhere in the page or layout:
 
-	<r:tag_cloud />
+    <r:tag_cloud />
 
 Seek venture capital immediately.
-	
+    
 ## Next steps
 
 * auto-completer to improve tagging consistency.
-	
+    
 ## Requirements
 
 * Radiant 0.8.1
@@ -109,9 +115,9 @@ This is no longer compatible with 0.7 because we're doing a lot of :having in th
 
 As usual:
 
-	git clone git://github.com/spanner/radiant-taggable-extension.git vendor/extensions/taggable
-	rake radiant:extensions:taggable:migrate
-	rake radiant:extensions:taggable:update
+    git clone git://github.com/spanner/radiant-taggable-extension.git vendor/extensions/taggable
+    rake radiant:extensions:taggable:migrate
+    rake radiant:extensions:taggable:update
 
 The update task will bring over a couple of CSS files for styling tags but you'll want to improve those.
 

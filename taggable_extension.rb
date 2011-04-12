@@ -1,5 +1,5 @@
 class TaggableExtension < Radiant::Extension
-  version "1.2.3"
+  version "1.2.4"
   description "General purpose tagging and retrieval extension: more versatile but less focused than the tags extension"
   url "http://github.com/spanner/radiant-taggable-extension"
     
