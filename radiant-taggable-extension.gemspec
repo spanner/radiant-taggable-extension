@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{radiant-taggable-extension}
-  s.version = "1.2.3"
+  s.version = "1.2.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["spanner"]
-  s.date = %q{2011-03-13}
+  s.date = %q{2011-04-12}
   s.description = %q{General purpose tagging extension: more versatile but less focused than the tags extension}
   s.email = %q{will@spanner.org}
   s.extra_rdoc_files = [
@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
      "VERSION",
      "app/controllers/admin/taggings_controller.rb",
      "app/controllers/admin/tags_controller.rb",
+     "app/helpers/taggable_helper.rb",
      "app/models/tag.rb",
      "app/models/tagging.rb",
      "app/views/admin/pages/_edit_title.html.haml",
@@ -32,9 +33,12 @@ Gem::Specification.new do |s|
      "app/views/admin/tags/index.html.haml",
      "app/views/admin/tags/new.html.haml",
      "app/views/admin/tags/show.html.haml",
+     "config/locales/en.yml",
      "config/routes.rb",
      "db/migrate/001_create_tags.rb",
      "db/migrate/002_import_keywords.rb",
+     "db/migrate/20110316210834_structural_tags.rb",
+     "db/migrate/20110411075109_metaphones.rb",
      "lib/natcmp.rb",
      "lib/radiant-taggable-extension.rb",
      "lib/taggable_admin_page_controller.rb",
@@ -43,9 +47,13 @@ Gem::Specification.new do |s|
      "lib/taggable_page.rb",
      "lib/taggable_tags.rb",
      "lib/tasks/taggable_extension_tasks.rake",
+     "lib/text/double_metaphone.rb",
+     "lib/text/metaphone.rb",
      "public/images/admin/new-tag.png",
      "public/images/admin/tag.png",
-     "public/stylesheets/admin/tags.css",
+     "public/javascripts/admin/taggable.js",
+     "public/javascripts/autocomplete.js",
+     "public/stylesheets/sass/admin/taggable.sass",
      "public/stylesheets/sass/tagcloud.sass",
      "radiant-taggable-extension.gemspec",
      "spec/datasets/tag_sites_dataset.rb",

@@ -252,7 +252,7 @@ class Tag < ActiveRecord::Base
 protected
   
   def calculate_metaphone
-    self.metaphone = Text::Metaphone.metaphone(self.title)
+    self.metaphone = Text::Metaphone.metaphone(self.title) if self.respond_to? :metaphone=
   end
 end
 
