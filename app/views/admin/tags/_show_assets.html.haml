@@ -1,0 +1,22 @@
+- include_stylesheet 'admin/assets' 
+
+- asset_taggings = @tag.taggings.of_a :asset
+- if asset_taggings.any?
+  %h2
+    Tagged assets
+  %table.index
+    - asset_taggings.each do |tagging|
+      - asset = tagging.tagged
+      - if asset
+        - dom_id = "tagging_#{tagging.id}"
+        %tr{:id => dom_id}
+          %td.asset{:style => 'width: 48px'}
+            = link_to image_tag(asset.thumbnail(:icon)), edit_admin_asset_path(asset), :class => 'icon'
+          %td.asset-title
+            = link_to asset.title, edit_admin_asset_path(asset) 
+          %td.actions
+            = link_to_remote image('minus') + ' detach', |
+              :html => { :class => "action", :title => "Detach tag from asset" }, |
+              :url => admin_tagging_url(tagging), :method => :delete, |
+              :after => "Effect.Fade('#{dom_id}', { duration: 0.5 })", |
+              :complete => "Element.remove('#{dom_id}');"

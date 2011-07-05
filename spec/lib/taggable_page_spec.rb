@@ -4,7 +4,7 @@ describe Page do
   dataset :tags
   
   it "should report itself taggable" do
-    Page.is_taggable?.should be_true
+    Page.has_tags?.should be_true
   end
 
   it "should return a list of pages form tag list" do

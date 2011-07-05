@@ -129,10 +129,24 @@ class Tag < ActiveRecord::Base
     taggings.map {|t| t.tagged}
   end
   
-  # Returns a list of all the page tagged with this tag.
+  # Returns a list of all the pages tagged with this tag.
   
   def pages
     Page.from_tags([self])
+  end
+  
+  # Returns a list of all the assets tagged with this tag.
+  
+  def assets
+    Asset.from_tags([self])
+  end
+  
+  # Returns a list of all the assets of a particular type tagged with this tag.
+  
+  Asset.known_types.each do |type|
+    define_method type.to_s.pluralize.intern do
+      Asset.send("#{type.to_s.pluralize}".intern).from_tags([self])
+    end
   end
   
   # Returns a list of all the tags that have been applied alongside this one.
@@ -244,10 +258,13 @@ class Tag < ActiveRecord::Base
   # adds retrieval methods for a taggable class to this class and to Tagging.
   
   def self.define_retrieval_methods(classname)
+    define_method "#{classname.downcase}_taggings".to_sym do
+      self.taggings.of_a(classname)
+    end
     define_method classname.downcase.pluralize.to_sym do
       classname.constantize.send :from_tag, self
     end
-  end
+  end  
 
 protected
   

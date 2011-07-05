@@ -16,6 +16,8 @@ class TagsDataset < Dataset::Base
     apply_tag :ideas, pages(:first), pages(:another), pages(:grandchild)
     apply_tag :sleep, pages(:first)
     apply_tag :furiously, pages(:first)
+    
+    create_page "library", :slug => "library", :class_name => 'LibraryPage', :body => 'Shhhhh.'
   end
   
   helpers do

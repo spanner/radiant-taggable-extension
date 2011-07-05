@@ -1,0 +1,14 @@
+- include_stylesheet 'admin/taggable'
+- include_javascript 'autocomplete'
+- include_javascript 'admin/taggable'
+
+- fields_for :asset, @asset do |fields|
+  %p.keywords
+    %label{:for=>"asset_keywords"}
+      Tags
+    = fields.text_field :keywords, :class => 'textbox tagger'
+
+  %p.title
+    %label{:for=>"asset_title"}
+      Title
+    = fields.text_field :title, :class => 'textbox', :maxlength => 100

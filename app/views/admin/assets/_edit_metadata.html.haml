@@ -1,0 +1,20 @@
+- fields_for :asset, @asset do |fields|
+  #extended-metadata{ :class => "row", :style => "display: none" }
+    %table.fieldset{ :cellpadding => "0", :cellspacing => "0", :border => "0" }
+      %tr
+        %td.label
+          = fields.label :caption
+        %td.field
+          = fields.text_field :caption, :class => 'textbox', :maxlength => 255 
+      -if @asset.new_record? || @asset.image?
+        %tr
+          %td.label
+            Display
+          %td.field{:style => 'text-align: left;'}
+            = fields.check_box :furniture
+            = fields.label :furniture, "Site furniture? (not shown in lists and galleries)"
+      = render_region :extended_metadata
+  %p
+    %small
+      %a{ :id => "more-extended-metadata", :href => "#", :onclick => "#{toggle_javascript_for('extended-metadata')}; return false;" } More
+      %a{ :id => "less-extended-metadata", :href => "#", :onclick => "#{toggle_javascript_for('extended-metadata')}; return false;", :style => "display: none" } Less
