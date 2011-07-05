@@ -17,7 +17,7 @@ module Taggable
         protected
 
           def load_default_tag_regions
-            returning OpenStruct.new do |tag|
+            OpenStruct.new.tap do |tag|
               tag.edit = Radiant::AdminUI::RegionSet.new do |edit|
                 edit.main.concat %w{edit_header edit_form}
                 edit.form.concat %w{edit_name edit_role edit_description}

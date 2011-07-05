@@ -13,6 +13,10 @@ module Taggable
       def has_tags?
         false
       end
+      def is_taggable?
+        ActiveSupport::Deprecation.warn("The is_taggable syntax has been replaced with has_tags for consistency with other extensions.", caller)
+        has_tags?
+      end
 
       def has_tags
         return if has_tags?
@@ -70,8 +74,10 @@ module Taggable
         ActiveRecord::Base.taggable_models.push(self.to_s.intern)
       end
       
-      alias :is_taggable :has_tags
-      alias :is_taggable? :has_tags?
+      def is_taggable
+        ActiveSupport::Deprecation.warn("The is_taggable syntax has been replaced with has_tags() and has_tags? for consistency with other extensions.", caller)
+        has_tags
+      end
     end
 
     module TaggableClassMethods
@@ -88,7 +94,7 @@ module Taggable
       def has_tags?
         true
       end
-    
+
       def tags_for_cloud_from(these, limit=50)
         Tag.attached_to(these).most_popular(limit)   # here popularity is use-count *within the group*
       end
