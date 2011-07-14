@@ -102,6 +102,23 @@ class Tag < ActiveRecord::Base
     }
   }
   
+  # returns all the tags that have been applied alongside any of these tags: that is, the
+  # set of tags that if applied will reduce further a set of tagged objects.
+  
+  named_scope :coincident_with, lambda { |tags|
+    tag_ids = tags.map(&:id).join(',')
+    {
+      :select => "your_tags.*, COUNT(your_tags.id) AS use_count",
+      :joins => %{
+        INNER JOIN taggings AS my_taggings ON my_taggings.tag_id = tags.id 
+        INNER JOIN taggings AS your_taggings ON my_taggings.tagged_type = your_taggings.tagged_type AND my_taggings.tagged_id = your_taggings.tagged_id
+        INNER JOIN tags AS your_tags ON your_taggings.tag_id = your_tags.id
+      }, 
+      :conditions => "tags.id IN (#{tag_ids}) AND NOT your_tags.id IN (#{tag_ids})",
+      :group => "your_tags.id"
+    }
+  }
+  
   def <=>(othertag)
     String.natcmp(self.title, othertag.title)   # natural sort method defined in lib/natcomp.rb
   end
@@ -152,27 +169,9 @@ class Tag < ActiveRecord::Base
   # Returns a list of all the tags that have been applied alongside this one.
   
   def coincident_tags
-    tags = []
-    self.tagged.each do |t|
-      tags += t.attached_tags if t
-    end
-    tags.uniq - [self]
+    self.class.coincident_with(self)
   end
-  
-  # Returns a list of all the tags that have been applied alongside _all_ of the supplied tags.
-  # used to offer reductive facets on library pages
-  # not very efficient at the moment, largely thanks to polymorphic tagging relationship
-  # TODO: omit tags with no reductive power (ie those applied to all the tagged items)
-  
-  def self.coincident_with(tags)
-    related_tags = []
-    tagged = Tagging.with_all_of_these(tags).map(&:tagged)
-    tagged.each do |t|
-      related_tags += t.attached_tags if t
-    end
-    related_tags.uniq - tags
-  end
-  
+    
   # returns true if tags are site-scoped
   
   def self.sited?

@@ -609,7 +609,52 @@ module Radius
       tag.expand unless tag.locals.assets.any?
     end
     
+    ############### libraryish utility tags that don't really belong here
+    # btw. the truncation tags are duplicated from the reader extension, which may
+    # or may not be installed here. I'll move them into radiant proper in the end
     
+    desc %{
+      Truncates the contained text or html to the specified length. Unless you supply a 
+      html="true" parameter, all html tags will be removed before truncation. You probably
+      don't want to do that: open tags will not be closed and the truncated
+      text length will vary.
+
+      <pre><code>
+        <r:truncated words="30"><r:content part="body" /></r:truncated>
+        <r:truncated chars="100" omission=" (continued)"><r:post:body /></r:truncated>
+        <r:truncated words="100" allow_html="true"><r:reader:description /></r:truncated>
+      </code></pre>
+    }
+    tag "truncated" do |tag|
+      content = tag.expand
+      tag.attr['words'] ||= tag.attr['length']
+      omission = tag.attr['omission'] || '&hellip;'
+      content = scrub_html(content) unless tag.attr['allow_html'] == 'true'
+      if tag.attr['chars']
+        truncate(content, :length => tag.attr['chars'].to_i, :omission => omission)
+      else
+        truncate_words(content, :length => tag.attr['words'].to_i, :omission => omission)   # defined in TaggableHelper
+      end
+    end
+
+    deprecated_tag "truncate", :substitute => "truncated"
+
+    desc %{
+      Strips all html tags from the contained text, leaving the text itself unchanged. 
+      Useful when, for example, using a page part to populate a meta tag.
+    }
+    tag "strip" do |tag|
+      # strip_html is in TaggableHelper
+      scrub_html tag.expand
+    end
+
+    desc %{
+      Removes all unsafe html tags and attributes from the enclosed text, protecting from cross-site scripting attacks while leaving the text intact.
+    }
+    tag "clean" do |tag|
+      # clean_html is in TaggableHelper
+      clean_html tag.expand
+    end    
 
   private
 

@@ -48,6 +48,9 @@ describe Tag do
     it "should return its list of pages" do
       @tag.pages.should == [pages(:first)]
     end
+  end
+  
+  describe "coinciding" do
     
   end
 end

@@ -174,11 +174,11 @@ module Radius
       </code></pre>
     }
     tag "library:assets" do |tag|
-      tag.locals.assets = _get_assets(tag)
       tag.expand
     end
     tag "library:assets:each" do |tag|
-      tag.render('asset_list', tag.attr.dup, &tag.block)       # r:page_list is defined in spanner's paperclipped
+      tag.locals.assets = _get_assets(tag)
+      tag.render('asset_list', tag.attr.dup, &tag.block)
     end
 
     desc %{
@@ -206,10 +206,10 @@ module Radius
         </code></pre>
       }
       tag "library:#{these}" do |tag|
-        tag.locals.assets = _get_assets(tag).send(these.intern)
         tag.expand
       end
       tag "library:#{these}:each" do |tag|
+        tag.locals.assets = _get_assets(tag).send(these.to_sym)
         tag.render('asset_list', tag.attr.dup, &tag.block)
       end
 
@@ -222,166 +222,132 @@ module Radius
         </code></pre>
       }
       tag "library:if_#{these}" do |tag|
-        tag.locals.assets = _get_assets(tag).send(these.intern)
+        tag.locals.assets = _get_assets(tag).send(these.to_sym)
         tag.expand if tag.locals.assets.any?
       end
-
-      ############### tags:* tags that only make sense on library pages
-
-      desc %{
-        Summarises in a sentence the list of tags currently active, with each one presented as a defaceting link.
-      }    
-      tag 'tags:unlink_list' do |tag| 
-        requested = _get_requested_tags(tag)     
-        if requested.any?
-          requested.map { |t|
-            tag.locals.tag = t
-            tag.render('tag:unlink', tag.attr.dup)
-          }.to_sentence
-        else
-          ""
-        end
-      end
-
-      desc %{
-        Makes a link that removes the current tag from the active set. Other options as for tag:link.
-
-        *Usage:* 
-        <pre><code><r:tag:unlink linkto='/library' /></code></pre>
-      }
-      tag 'tag:unlink' do |tag|
-        raise TagError, "tag must be defined for tag:unlink tag" unless tag.locals.tag
-        options = tag.attr.dup
-        options['class'] ||= 'detag'
-        anchor = options['anchor'] ? "##{options.delete('anchor')}" : ''
-        attributes = options.inject('') { |s, (k, v)| s << %{#{k.downcase}="#{v}" } }.strip
-        attributes = " #{attributes}" unless attributes.empty?
-        text = tag.double? ? tag.expand : tag.render('tag:name')
-
-        if tag.locals.page.is_a?(LibraryPage)
-          href = tag.locals.page.url(tag.locals.page.requested_tags - [tag.locals.tag])
-        elsif page_url = (options.delete('tagpage') || Radiant::Config['tags.page'])
-          href = clean_url(page_url + '/-' + tag.locals.tag.clean_title)
-        else 
-          href ||= Rack::Utils.escape("-#{tag.locals.tag.title}") + '/'
-        end
-
-        %{<a href="#{href}#{anchor}"#{attributes}>#{text}</a>}
-      end
-
-
-      ############### libraryish utility tags that don't really belong here
-
-      desc %{
-        Truncates the contained text to the specified number of words. Attributes:
-        * `limit` sets the number of words shown. Default is 64.
-        * `ellipsis` is the suffix used to indicate truncation. Default is '&hellip;'
-        * `strip="true"` will cause all html tags to be stripped from the contained text before it is truncated. Default is false.
-      }
-      tag "truncate" do |tag|
-        # truncate_words is in LibraryHelper
-        truncate_words tag.expand, :limit => tag.attr['limit'], :ellipsis => tag.attr['ellipsis'], :strip => tag.attr['strip'] == 'true'
-      end
-
-      desc %{
-        Strips all html tags from the contained text, leaving the text itself unchanged. 
-        Useful when, for example, using a page part to populate a meta tag.
-      }
-      tag "strip" do |tag|
-        # strip_html is in LibraryHelper
-        strip_html tag.expand
-      end
-
-      desc %{
-        Removes all unsafe html tags and attributes from the enclosed text, protecting from cross-site scripting attacks while leaving the text intact.
-      }
-      tag "clean" do |tag|
-        # clean_html is in LibraryHelper
-        clean_html tag.expand
-      end
-
-
-
-      private
-
-        def _get_requested_tags(tag)
-          tag.locals.page.requested_tags
-        end
-
-        def _get_coincident_tags(tag)
-          requested = _get_requested_tags(tag)
-          limit = tag.attr['limit'] || 50
-          if requested.any?
-            Tag.coincident_with(requested)
-          else
-            Tag.most_popular(limit)
-          end
-        end
-      end
-
-      # a bit of extra logic so that in the absence of any requested tags we default to all, not none
-      
-      def _default_library_find_options
-        {
-          :by => 'created_at',
-          :order => 'desc'
-        }
-      end
-      
-      def _get_pages(tag)
-        options = children_find_options(tag)
-        requested = _get_requested_tags(tag)
-        pages = Page.scoped(options)
-        pages = pages.tagged_with(requested) if requested.any?
-        pages
-      end
-
-      def _get_assets(tag)
-        options = asset_find_options(tag)
-        requested = _get_requested_tags(tag)
-        assets = Asset.scoped(options)
-        assets = assets.tagged_with(requested) if requested.any?
-        assets
-      end
-      
-      # duplicate of children_find_options except:
-      # no virtual or status options
-      # defaults to chronological descending
-      
-      def asset_find_options(tag)
-        attr = tag.attr.symbolize_keys
-
-        options = {}
-
-        [:limit, :offset].each do |symbol|
-          if number = attr[symbol]
-            if number =~ /^\d{1,4}$/
-              options[symbol] = number.to_i
-            else
-              raise TagError.new("`#{symbol}' attribute of `each' tag must be a positive number between 1 and 4 digits")
-            end
-          end
-        end
-
-        by = (attr[:by] || 'created_at').strip
-        order = (attr[:order] || 'desc').strip
-        order_string = ''
-        if self.attributes.keys.include?(by)
-          order_string << by
-        else
-          raise TagError.new("`by' attribute of `each' tag must be set to a valid field name")
-        end
-        if order =~ /^(asc|desc)$/i
-          order_string << " #{$1.upcase}"
-        else
-          raise TagError.new(%{`order' attribute of `each' tag must be set to either "asc" or "desc"})
-        end
-        options[:order] = order_string
-        options
-      end
-
     end
 
+    ############### extra tags:* tags that only make sense on library pages
+
+    desc %{
+      Summarises in a sentence the list of tags currently active, with each one presented as a defaceting link.
+    }    
+    tag 'tags:unlink_list' do |tag| 
+      requested = _get_requested_tags(tag)     
+      if requested.any?
+        requested.map { |t|
+          tag.locals.tag = t
+          tag.render('tag:unlink', tag.attr.dup)
+        }.to_sentence
+      else
+        ""
+      end
+    end
+
+    desc %{
+      Makes a link that removes the current tag from the active set. Other options as for tag:link.
+
+      *Usage:* 
+      <pre><code><r:tag:unlink linkto='/library' /></code></pre>
+    }
+    tag 'tag:unlink' do |tag|
+      raise TagError, "tag must be defined for tag:unlink tag" unless tag.locals.tag
+      options = tag.attr.dup
+      options['class'] ||= 'detag'
+      anchor = options['anchor'] ? "##{options.delete('anchor')}" : ''
+      attributes = options.inject('') { |s, (k, v)| s << %{#{k.downcase}="#{v}" } }.strip
+      attributes = " #{attributes}" unless attributes.empty?
+      text = tag.double? ? tag.expand : tag.render('tag:name')
+
+      if tag.locals.page.is_a?(LibraryPage)
+        href = tag.locals.page.url(tag.locals.page.requested_tags - [tag.locals.tag])
+      elsif page_url = (options.delete('tagpage') || Radiant::Config['tags.page'])
+        href = clean_url(page_url + '/-' + tag.locals.tag.clean_title)
+      else 
+        href ||= Rack::Utils.escape("-#{tag.locals.tag.title}") + '/'
+      end
+
+      %{<a href="#{href}#{anchor}"#{attributes}>#{text}</a>}
+    end
+
+  private
+
+    def _get_requested_tags(tag)
+      tag.locals.page.requested_tags
+    end
+
+    def _get_coincident_tags(tag)
+      requested = _get_requested_tags(tag)
+      limit = tag.attr['limit'] || 50
+      if requested.any?
+        Tag.coincident_with(requested)
+      else
+        Tag.most_popular(limit)
+      end
+    end
+
+    # a bit of extra logic so that in the absence of any requested tags we default to all, not none
+  
+    def _default_library_find_options
+      {
+        :by => 'created_at',
+        :order => 'desc'
+      }
+    end
+  
+    def _get_pages(tag)
+      options = children_find_options(tag)
+      requested = _get_requested_tags(tag)
+      pages = Page.scoped(options)
+      pages = pages.tagged_with(requested) if requested.any?
+      pages
+    end
+
+    def _get_assets(tag)
+      options = asset_find_options(tag)
+      requested = _get_requested_tags(tag)
+      assets = Asset.scoped(options)
+      assets = assets.tagged_with(requested) if requested.any?
+      assets
+    end
+  
+    # duplicate of children_find_options except:
+    # no virtual or status options
+    # defaults to chronological descending
+  
+    def asset_find_options(tag)
+      attr = tag.attr.symbolize_keys
+
+      options = {}
+
+      [:limit, :offset].each do |symbol|
+        if number = attr[symbol]
+          if number =~ /^\d{1,4}$/
+            options[symbol] = number.to_i
+          else
+            raise TagError.new("`#{symbol}' attribute of `each' tag must be a positive number between 1 and 4 digits")
+          end
+        end
+      end
+
+      by = (attr[:by] || 'created_at').strip
+      order = (attr[:order] || 'desc').strip
+      order_string = ''
+      if self.attributes.keys.include?(by)
+        order_string << by
+      else
+        raise TagError.new("`by' attribute of `each' tag must be set to a valid field name")
+      end
+      if order =~ /^(asc|desc)$/i
+        order_string << " #{$1.upcase}"
+      else
+        raise TagError.new(%{`order' attribute of `each' tag must be set to either "asc" or "desc"})
+      end
+      options[:order] = order_string
+      options
+    end
+
+  end
 end
 
 
