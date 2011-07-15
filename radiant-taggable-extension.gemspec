@@ -11,6 +11,7 @@ Gem::Specification.new do |s|
   s.homepage    = RadiantTaggableExtension::URL
   s.summary     = RadiantTaggableExtension::SUMMARY
   s.description = RadiantTaggableExtension::DESCRIPTION
+  s.add_dependency 'sanitize', "~> 2.0.1"
 
   ignores = if File.exist?('.gitignore')
     File.read('.gitignore').split("\n").inject([]) {|a,p| a + Dir[p] }

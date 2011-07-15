@@ -1,3 +1,5 @@
+require 'sanitize'
+
 module TaggableHelper
 
   def clean_html(text)
