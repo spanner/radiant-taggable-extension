@@ -1,7 +1,8 @@
 module Radius
   module TaggableTags
     include Radiant::Taggable
-  
+    include TaggableHelper
+    
     class TagError < StandardError; end
       
     ################# general purpose lister utilities and dryers-out
@@ -686,7 +687,6 @@ module Radius
       end
       tag.locals.tags = tags.uniq.compact
     end  
-
 
     def _asset_finder(tag)
       if (tag.locals.tags)
