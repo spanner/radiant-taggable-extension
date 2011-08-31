@@ -7,12 +7,15 @@ module Taggable
         attr_accessor :tag
         alias_method :tags, :tag
 
-        def load_default_regions_with_tags
-          load_default_regions_without_tags
+        def load_taggable_regions
           @tag = load_default_tag_regions
         end
-
-        alias_method_chain :load_default_regions, :tags
+        
+        # def load_default_regions_with_tags
+        #   load_default_regions_without_tags
+        #   load_taggable_regions
+        # end
+        # alias_method_chain :load_default_regions, :tags
 
         protected
 
@@ -35,9 +38,8 @@ module Taggable
               tag.new = tag.edit
             end
           end
-      
+        
       end
     end
   end
-
 end

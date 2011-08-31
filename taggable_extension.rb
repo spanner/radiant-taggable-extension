@@ -6,10 +6,6 @@ class TaggableExtension < Radiant::Extension
   description RadiantTaggableExtension::DESCRIPTION
   url RadiantTaggableExtension::URL
   
-  extension_config do |config|
-    config.gem 'sanitize', :version => "~> 2.0.1"
-  end
-  
   def activate
     require 'natcmp'                                                      # a natural sort algorithm. possibly not that efficient.
     ActiveRecord::Base.send :include, Taggable::Model                     # provide has_tags for everything but don't call it for anything
@@ -24,7 +20,7 @@ class TaggableExtension < Radiant::Extension
 
     unless defined? admin.tag
       Radiant::AdminUI.send :include, Taggable::AdminUI
-      admin.tag = Radiant::AdminUI.load_default_tag_regions
+      Radiant::AdminUI.load_taggable_regions
     end
 
     tab("Content") do
