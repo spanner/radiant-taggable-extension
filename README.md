@@ -10,26 +10,33 @@ This extension differs from `tags` in a few ways that matter to me but may not t
 
 * We're not so focused on tag clouds - though you can still make them - but more on archival and linking functions.
 * It provides faceted search of any tagged class.
-* We subvert the keywords mechanism on pages rather than adding another one. I may change this soon to play more nicely with page fields.
+* We subvert the keywords mechanism on pages rather than adding another one. I am likely to change this soon to play more nicely with page fields.
 * The tag-choosing and tag-removal interface is (about to be) quite nice.
 * It's editorially versatile: tags can be used as page pointers and their visibility is controllable
-* Anything can be tagged. By default we only do pages but other extensions can participate with a single line in a model class. See the [taggable_events](https://github.com/spanner/radiant-taggable_events-extension) extension for a minimal example or just put `has_tags` at the top of a model class.
+* Anything can be tagged. By default we only do pages and assets but other extensions can participate with a single line in a model class. See the [taggable_events](https://github.com/spanner/radiant-taggable_events-extension) extension for a minimal example or just put `has_tags` at the top of a model class.
 * We don't use `has_many_polymorphs` (it burns!)
 * Or any of the tagging libraries: it only takes a few scopes
+* Because the library is entirely scope-based it's easy to add more retrieval filters. Want a tagged and faceted googlemap of your calendar events? `event_calendar` + `event_map` * `taggable` + `taggable_events`.
 
-When you first install the extension you shouldn't see much difference: all we do out of the box is to take over (and make more prominent) the keywords field in the page-edit view.
+When you first install the extension you shouldn't see much difference: all we do out of the box is to take over (and make more prominent) the keywords field in the page and asset editing views.
 
-## New
+## Compatibility
 
-* API change: `has_tags` instead of `is_taggable`.
+Versions 2.x of taggable are meant for use with radiant 1. They expect to be included in your application as a bundled gem. There is a '0.9.1' tag in the repository for the latest version compatible with older versions of radiant.
 
-* The library extension has been reincorporated into taggable, since radiant 1 has assets. Out of the box you get tags, clouds and faceting of both pages and assets. It should work with 0.9.1 too but you will need paperclipped.
+## Installation
 
-* The long-promised tag-suggester is there in a useable though slightly basic form.
+Install the gem:
+
+	sudo gem install radiant-taggable-extension
+
+and add it to your application's Gemfile:
+
+	gem radiant-taggable-extension, '~>2.0.0'
 
 ## Status 
 
-Apart from any crumpling caused by the recent reincorporation of Library this is all mature code that has been in use for years.
+Apart from any crumpling caused by the recent re-incorporation of Library and all its asset tags, this is all mature code that has been in use for years.
 
 ## Efficiency
 
@@ -51,11 +58,11 @@ The **LibraryPage** page type is a handy cache-friendly way of catching tag para
 
     /archive/lasagne/chips/pudding
     
-and the right tags will be retrieved, if they exist.
+The right tags will be retrieved, if they exist, and with the radius tags below they can be used to populate the page.
 
 ## Radius tags
 
-This extension creates a great many radius tags. There are several kinds:
+This extension creates a great many radius tags but in an orderly way. There are four kinds:
 
 ### Tag information
 
@@ -168,26 +175,6 @@ Seek venture capital immediately.
       <r:assets:image size="standard" />
       <p class="caption"><r:assets:caption /></p>
     </r:related_images:each>
-    
-## Requirements
-
-* Radiant 1 or radiant 0.9.x with the paperclipped extension. 
-
-Radiant 1 is strongly recommended.
-
-## Installation
-
-As usual:
-
-    git clone git://github.com/spanner/radiant-taggable-extension.git vendor/extensions/taggable
-    rake radiant:extensions:taggable:migrate
-    rake radiant:extensions:taggable:update
-
-The update task will bring over a couple of CSS files for styling tags but you'll want to improve those.
-
-## Bugs
-
-Quite likely. [Github issues](http://github.com/spanner/radiant-taggable-extension/issues), please, or for little things an email or github message is fine.
 
 ## Author and copyright
 

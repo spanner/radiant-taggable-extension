@@ -24,9 +24,9 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.post_install_message = %{
-  Add this to your radiant project with:
+  Add this to your Gemfile with:
 
-    config.gem 'radiant-taggable-extension', :version => '~> #{RadiantTaggableExtension::VERSION}'
+    gem 'radiant-taggable-extension', '~> #{RadiantTaggableExtension::VERSION}'
 
   }
 end
