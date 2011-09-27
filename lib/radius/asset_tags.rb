@@ -26,6 +26,20 @@ module Radius
     tag 'asset:tags:each' do |tag|
       tag.render('tags:each', tag.attr.dup, &tag.block)
     end
+    
+    desc %{
+      Expands if the present asset has any tags.
+    }    
+    tag 'asset:if_tags' do |tag|
+      tag.expand if tag.locals.asset.attached_tags.any?
+    end
+
+    desc %{
+      Expands if the present asset has no tags.
+    }    
+    tag 'asset:unless_tags' do |tag|
+      tag.expand unless tag.locals.asset.attached_tags.any?
+    end
 
     desc %{
       Lists all the assets similar to this asset (based on its tagging), in descending order of relatedness.

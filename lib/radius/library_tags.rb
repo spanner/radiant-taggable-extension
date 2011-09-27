@@ -227,7 +227,64 @@ module Radius
       end
     end
 
-    ############### extra tags:* tags that only make sense on library pages
+    ############### extra tags:* tags that only make sense on library or other faceting pages
+
+    desc %{
+      Makes a link that adds the current tag to the active set. Other options are passed through as usual.
+      If the present page is not a library page, or similar, the link will be directed to the first available
+      library page. You can override this behavior by specifying a 'base' parameter, which will force that  
+      path prefix regardless of what page it designates, if any. Remote urls are also possible.
+
+      *Usage:* 
+      <pre><code><r:tag:link base='/library' /></code></pre>
+    }
+    tag 'tag:link' do |tag|
+      options = tag.attr.dup
+      options['class'] ||= 'facet'
+      anchor = options['anchor'] ? "##{options.delete('anchor')}" : ''
+      attributes = options.inject(' ') { |s, (k, v)| s << %{#{k.downcase}="#{v}" } }.strip
+      text = tag.double? ? tag.expand : tag.render('tag:name')
+      if tag.locals.page.respond_to?(:requested_tags)
+        href = tag.locals.page.path(tag.locals.page.requested_tags + tag.locals.tag)
+      elsif base_path = options.delete('base') 
+        href = clean_path(base_path + '/-' + tag.locals.tag.clean_title)
+      elsif library = LibraryPage.first
+        href = library.path([tag.locals.tag])
+      else 
+        raise TagError "cannot find a LibraryPage to link to."
+      end
+      
+      %{<a href="#{href}#{anchor}"#{attributes}>#{text}</a>}
+    end
+
+    desc %{
+      Summarises in a sentence the list of attached, with each one presented as a faceting link.
+    }    
+    tag 'tags:link_list' do |tag| 
+      _get_requested_tags(tag).map { |t|
+        tag.locals.tag = t
+        tag.render('tag:link', tag.attr.dup)
+      }.join(' | ')
+    end
+
+    desc %{
+      Makes a link that removes the current tag from the active set. Other options as for tag:link. 
+      This only really makes sense in the context of a requested_tags list, since no other tag can be unlinked.
+
+      *Usage:* 
+      <pre><code><r:requested_tags:each><r:tag:unlink base='/library' /></r:requested_tags:each></code></pre>
+    }
+    tag 'tag:unlink' do |tag|
+      raise TagError "unlinking a tag requires a library page or similar" unless tag.locals.page.respond_to?(:requested_tags)
+
+      options = tag.attr.dup
+      options['class'] ||= 'defacet'
+      anchor = options['anchor'] ? "##{options.delete('anchor')}" : ''
+      attributes = options.inject(' ') { |s, (k, v)| s << %{#{k.downcase}="#{v}" } }.strip
+      text = tag.double? ? tag.expand : tag.render('tag:name')
+      href = tag.locals.page.path(tag.locals.page.requested_tags - [tag.locals.tag])
+      %{<a href="#{href}#{anchor}"#{attributes}>#{text}</a>}
+    end
 
     desc %{
       Summarises in a sentence the list of tags currently active, with each one presented as a defaceting link.
@@ -242,32 +299,6 @@ module Radius
       else
         ""
       end
-    end
-
-    desc %{
-      Makes a link that removes the current tag from the active set. Other options as for tag:link.
-
-      *Usage:* 
-      <pre><code><r:tag:unlink linkto='/library' /></code></pre>
-    }
-    tag 'tag:unlink' do |tag|
-      raise TagError, "tag must be defined for tag:unlink tag" unless tag.locals.tag
-      options = tag.attr.dup
-      options['class'] ||= 'detag'
-      anchor = options['anchor'] ? "##{options.delete('anchor')}" : ''
-      attributes = options.inject('') { |s, (k, v)| s << %{#{k.downcase}="#{v}" } }.strip
-      attributes = " #{attributes}" unless attributes.empty?
-      text = tag.double? ? tag.expand : tag.render('tag:name')
-
-      if tag.locals.page.is_a?(LibraryPage)
-        href = tag.locals.page.url(tag.locals.page.requested_tags - [tag.locals.tag])
-      elsif page_url = (options.delete('tagpage') || Radiant::Config['tags.page'])
-        href = clean_url(page_url + '/-' + tag.locals.tag.clean_title)
-      else 
-        href ||= Rack::Utils.escape("-#{tag.locals.tag.title}") + '/'
-      end
-
-      %{<a href="#{href}#{anchor}"#{attributes}>#{text}</a>}
     end
 
   private

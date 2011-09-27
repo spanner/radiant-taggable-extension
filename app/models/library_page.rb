@@ -13,8 +13,8 @@ class LibraryPage < Page
     true
   end
   
-  def find_by_url(url, live = true, clean = false)
-    url = clean_url(url) if clean
+  def find_by_path(url, live = true, clean = false)
+    url = clean_path(url) if clean
     my_url = self.url
     return false unless url =~ /^#{Regexp.quote(my_url)}(.*)/
     tags = $1.split('/')
@@ -52,9 +52,9 @@ class LibraryPage < Page
   # this isn't very pleasing but it's the best way to let the controller know 
   # of our real address once tags have been added and removed.
   
-  def url_with_tags(tags = requested_tags)
-    clean_url( url_without_tags + '/' + tags.uniq.map(&:clean_title).to_param )
+  def path_with_tags(tags = requested_tags)
+    clean_path( path_without_tags + '/' + tags.uniq.map(&:clean_title).to_param )
   end
-  alias_method_chain :url, :tags
+  alias_method_chain :path, :tags
   
 end
