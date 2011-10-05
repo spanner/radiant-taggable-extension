@@ -1,5 +1,5 @@
 module Taggable
-  module Page      # for inclusion into Page
+  module Page
 
     # here we have a few special cases for page tags.
     # because of the page tree

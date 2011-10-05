@@ -70,21 +70,27 @@ describe SiteController do
     end
     
     describe "with tags requested" do
-      it "should add a default Cache-Control header with public and max-age of 5 minutes" do
+      it "should redirect to a normalised form of the requested address" do
         get :show_page, :url => '/library/green/furiously'
+        response.should be_redirect
+        response.should redirect_to 'http://test.host/library/furiously/green'
+      end
+
+      it "should add a default Cache-Control header with public and max-age of 5 minutes" do
+        get :show_page, :url => '/library/furiously/green'
         response.headers['Cache-Control'].should =~ /public/
         response.headers['Cache-Control'].should =~ /max-age=300/
       end
 
       it "should pass along the etag set by the page" do
-        get :show_page, :url => '/library/green/furiously'
+        get :show_page, :url => '/library/furiously/green'
         response.headers['ETag'].should be
       end
 
       it "should return a not-modified response when the sent etag matches" do
         response.stub!(:etag).and_return("foobar")
         request.if_none_match = 'foobar'
-        get :show_page, :url => '/library/green/furiously'
+        get :show_page, :url => '/library/furiously/green'
         response.response_code.should == 304
         response.body.should be_blank
       end

@@ -1,5 +1,5 @@
 module Taggable
-  module Model      # for inclusion into ActiveRecord::Base
+  module Model
   
     def self.included(base)
       base.extend ClassMethods
