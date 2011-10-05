@@ -59,7 +59,7 @@ module Taggable
       # The normal `path` method is extended to append the (sorted and deduped) tags attached to the page request
       #
       def path_with_tags(tags = requested_tags)
-        clean_path( path_without_tags + '/' + tags.uniq.sort.map(&:clean_title).to_param )
+        clean_path( path_without_tags + '/' + tags.uniq.compact.sort.map(&:clean_title).to_param )
       end
 
     private

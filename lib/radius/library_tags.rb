@@ -245,7 +245,7 @@ module Radius
       attributes = options.inject(' ') { |s, (k, v)| s << %{#{k.downcase}="#{v}" } }.strip
       text = tag.double? ? tag.expand : tag.render('tag:name')
       if tag.locals.page.respond_to?(:requested_tags)
-        href = tag.locals.page.path(tag.locals.page.requested_tags + tag.locals.tag)
+        href = tag.locals.page.path(tag.locals.page.requested_tags + [tag.locals.tag])
       elsif base_path = options.delete('base') 
         href = clean_path(base_path + '/-' + tag.locals.tag.clean_title)
       elsif library = LibraryPage.first
