@@ -1,7 +1,0 @@
-%tr
-  %td.label
-    Display
-  %td.field{:style => 'text-align: left;'}
-    - fields_for :asset, @asset do |fields|
-      = fields.check_box :furniture
-      = fields.label :furniture, t('taggable_extension.site_furniture')

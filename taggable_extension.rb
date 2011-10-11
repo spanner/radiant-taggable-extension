@@ -21,6 +21,8 @@ class TaggableExtension < Radiant::Extension
     unless defined? admin.tag
       Radiant::AdminUI.send :include, Taggable::AdminUI
       Radiant::AdminUI.load_taggable_regions
+      admin.asset.edit.add :extended_metadata, 'furniture'
+      admin.asset.edit.add :extended_metadata, 'tags'
     end
 
     tab("Content") do

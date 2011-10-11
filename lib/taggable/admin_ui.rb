@@ -10,12 +10,6 @@ module Taggable
         def load_taggable_regions
           @tag = load_default_tag_regions
         end
-        
-        # def load_default_regions_with_tags
-        #   load_default_regions_without_tags
-        #   load_taggable_regions
-        # end
-        # alias_method_chain :load_default_regions, :tags
 
         protected
 

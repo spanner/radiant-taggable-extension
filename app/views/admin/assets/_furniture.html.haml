@@ -1,0 +1,6 @@
+- fields_for :asset, @asset do |f|
+  %tr
+    %td.label
+      = f.label :furniture
+    %td.field{:style => 'text-align: left'}
+      = f.check_box :furniture

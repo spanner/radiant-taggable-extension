@@ -1,4 +1,9 @@
 en:
+  activerecord:
+    attributes:
+      asset:
+        keywords: "Tags"
+        furniture: "Furniture?"
   tags: "Tags"
   helpers:
     label:
@@ -7,5 +12,3 @@ en:
         page_id: "Pointer to page"
         visible: "Visible?"
         description: "Description (optional)"
-  taggable_extension:
-    site_furniture: "Site furniture? (not shown in lists and galleries)"
