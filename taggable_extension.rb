@@ -17,13 +17,11 @@ class TaggableExtension < Radiant::Extension
     SiteController.send :include, Taggable::SiteController                # some path and parameter handling in support of library pages
     Admin::PagesController.send :include, Taggable::AdminPagesController  # tweaks the admin interface to make page tags more prominent
     UserActionObserver.instance.send :add_observer!, Tag                  # tags get creator-stamped
-
-    unless defined? admin.tag
-      Radiant::AdminUI.send :include, Taggable::AdminUI
-      Radiant::AdminUI.load_taggable_regions
-      admin.asset.edit.add :extended_metadata, 'furniture'
-      admin.asset.edit.add :extended_metadata, 'tags'
-    end
+    Radiant::AdminUI.send :include, Taggable::AdminUI unless defined? admin.tag
+    admin.tag ||= Radiant::AdminUI.load_taggable_regions
+    admin.asset.edit.add :extended_metadata, 'furniture'
+    admin.asset.edit.add :extended_metadata, 'tags'
+    admin.page.edit.add :extended_metadata, 'tags'
 
     tab("Content") do
       add_item("Tags", "/admin/tags")

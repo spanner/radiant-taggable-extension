@@ -119,9 +119,6 @@ module Taggable
         self.attached_tags.empty? ? [] : self.class.from_all_tags(self.attached_tags) - [self]
       end
     
-      # in the case of pages and anything else that keywords in the same way this overrides the existing column
-      # the rest of the time it's just another way of specifying tags.
-    
       def keywords 
         self.attached_tags.map {|t| t.title}.join(', ')
       end
