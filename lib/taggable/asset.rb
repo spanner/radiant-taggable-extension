@@ -25,7 +25,7 @@ module Taggable
       end
     
       def keywords=(somewords="")
-        self.attached_tags = Tag.from_list(somewords)
+        self.attached_tags = Tag.from_list(somewords) || []
       end
     
       def keywords_before_type_cast   # called by form_helper

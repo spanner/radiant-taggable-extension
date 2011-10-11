@@ -7,3 +7,5 @@ en:
         page_id: "Pointer to page"
         visible: "Visible?"
         description: "Description (optional)"
+  taggable_extension:
+    site_furniture: "Site furniture? (not shown in lists and galleries)"

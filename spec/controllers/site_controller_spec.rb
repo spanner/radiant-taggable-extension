@@ -73,7 +73,7 @@ describe SiteController do
       it "should redirect to a normalised form of the requested address" do
         get :show_page, :url => '/library/green/furiously'
         response.should be_redirect
-        response.should redirect_to 'http://test.host/library/furiously/green'
+        response.should redirect_to 'http://test.host/library/furiously/green/'
       end
 
       it "should add a default Cache-Control header with public and max-age of 5 minutes" do
