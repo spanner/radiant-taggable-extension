@@ -32,6 +32,10 @@ module Taggable
         keywords
       end
 
+			def furniture
+				"FIXME!"
+			end
+
     end
   end
 end
