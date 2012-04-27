@@ -438,6 +438,29 @@ module Radius
       tag.locals.tag.description
     end
 
+		desc %{
+			Renders the Content, if the Tag has a description
+			
+			*Usage:*
+			<pre><code><r:tag:if_description /></code></pre>
+		}
+		tag 'tag:if_description' do |tag|
+      raise TagError, "tag must be defined for tag:if_description tag" unless tag.locals.tag
+			tag.expand unless tag.locals.tag.description.to_s.empty?
+    end
+			
+		desc %{
+			Renders the Content, unless the tag has a description
+
+			*Usage:*
+			<pre><code><r:tag:unless_description /></code></pre>
+		}
+		tag 'tag:unless_description' do |tag|
+      raise TagError, "tag must be defined for tag:unless_description tag" unless tag.locals.tag
+			tag.expand if tag.locals.tag.description.to_s.empty?
+    end
+			
+
     desc %{
       Shows use_count of current tag (which will normally only be set if we're within a tag_cloud tag)
     
