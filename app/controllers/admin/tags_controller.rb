@@ -19,5 +19,10 @@ class Admin::TagsController < Admin::ResourceController
     @tags = Tag.sized(Tag.with_count).sort
     response_for :plural
   end
+
+  def remove
+    @tag = load_model
+
+  end
     
 end

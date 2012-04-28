@@ -28,7 +28,10 @@ module Taggable
                 index.tbody.concat %w{title_cell link_cell description_cell usage_cell modify_cell}
                 index.bottom.concat %w{new_button}
               end
-              tag.remove = tag.index
+              #tag.remove = tag.index
+              tag.remove = Radiant::AdminUI::RegionSet.new do |remove|
+                remove.main.concat %w{remove_header remove_pages remove_assets}
+              end
               tag.new = tag.edit
             end
           end

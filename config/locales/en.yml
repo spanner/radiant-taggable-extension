@@ -13,3 +13,15 @@ en:
         page_id: "Pointer to page"
         visible: "Visible?"
         description: "Description (optional)"
+  config:
+    library:
+      path: "Library Path"
+
+  taggable_extension:
+    name: "Taggable"
+    library: "Library"
+
+  text:
+    tag:
+      remove_warning: 'Are you sure you want to <strong class="warning">permanently remove</strong> the Tag?'
+      remove: 'Remove Tag "%{tag}"'

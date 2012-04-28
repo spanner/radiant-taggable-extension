@@ -21,6 +21,8 @@ class TaggableExtension < Radiant::Extension
     admin.tag ||= Radiant::AdminUI.load_taggable_regions
     admin.asset.edit.add :extended_metadata, 'tags'
     admin.page.edit.add :extended_metadata, 'tags'
+    admin.configuration.show.add :config, 'admin/configuration/taggable_show' #, :after => 'defaults'
+    admin.configuration.edit.add :form,   'admin/configuration/taggable_edit' #, :after => 'edit_defaults'
 
     tab("Content") do
       add_item("Tags", "/admin/tags")

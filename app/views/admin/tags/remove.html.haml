@@ -1,15 +1,19 @@
+- @page_title = 'Tag: ' + @tag.title + ' - ' + default_page_title
 - include_stylesheet 'admin/taggable'
 
 - render_region :main do |main|
-  - main.show_header do
+  - main.remove_header do
     %h1
-      Tag:
-      = link_to @tag.title, edit_admin_tag_url(@tag)
+      = image('tag', :alt => '')
+      /= link_to @tag.title, edit_admin_tag_url(@tag)
+      = t('text.tag.remove', :tag => @tag.title )
     - if @tag.description
       %p
         = @tag.description
+    %p
+      = t('text.tag.remove_warning', :tag => @tag)
 
-  - main.show_pages do
+  - main.remove_pages do
     - page_taggings = @tag.taggings.of_a :page
     - if page_taggings.any?
       %p
@@ -30,3 +34,8 @@
                 :after => "Effect.Fade('#{dom_id}', { duration: 0.5 })", |
                 :complete => "Element.remove('#{dom_id}');"
 
+    - form_for [:admin, @tag], :html => {:method => :delete, 'data-onsubmit_status'=>"Removing pages&#8230;"} do
+      .buttons
+        %input.button{:type=>"submit", :value => "Delete" }/
+        = t('or')
+        = link_to t('cancel'), admin_tag_url()
