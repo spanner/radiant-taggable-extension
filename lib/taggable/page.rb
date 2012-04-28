@@ -49,6 +49,13 @@ module Taggable
         family
       end
 
+      def before_destroy
+        tags = Tag.attached_to(self.with_children)
+        for tag in tags
+          self.remove_tag(tag.title)
+        end
+      end
+
     end
   end
 end

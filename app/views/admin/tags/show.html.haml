@@ -20,9 +20,9 @@
           - dom_id = "tagging_#{tagging.id}"
           %tr.page.level-1{:id => dom_id}
             %td{:style => 'width: 48px'}
-              = link_to image('page', :class => "icon"), page.url
+              = link_to image('page', :class => "icon"), page.nil? ? '' : page.url
             %td.name
-              = link_to %{ <span class="title">#{ h(page.title) }</span>}, page.url
+              = link_to %{ <span class="title">#{ h( page.nil? ? 'DELETED PAGE' : page.title ) }</span>}, page.nil? ? '' : page.url
             %td.actions
               = link_to_remote image('minus') + ' detach', |
                 :html => { :class => "action", :title => "Detach tag from page" }, |

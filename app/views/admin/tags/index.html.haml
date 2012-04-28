@@ -43,10 +43,9 @@
             - tbody.usage_cell do
               %td.tag-usage
                 - if tag.use_count.to_i > 0
-                  = link_to "#{tag.use_count} #{pluralize(tag.use_count.to_i, 'item')}", admin_tag_url(tag)
+                  = link_to "#{pluralize(tag.use_count.to_i, 'item')}", admin_tag_url(tag)
                 - else
                   \-
-
             - tbody.modify_cell do
               %td.actions
                 = link_to image('minus') + ' ' + t('remove'), remove_admin_tag_url(tag), :class => "action"
