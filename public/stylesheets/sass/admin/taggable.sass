@@ -78,13 +78,14 @@ p.keywords
   cursor: default
   text-align: left
   max-height: 350px
-  overflow: auto
   margin: 0
   div
     padding: 5px 10px
     white-space: nowrap
-    .selected
-      background: #f0f0f0
+    overflow: hidden
+    text-overflow: ellipsis
+  .selected
+    background: #59606a
   strong
     font-weight: normal
     color: #3399ff

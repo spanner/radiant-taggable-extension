@@ -25,3 +25,5 @@ en:
     tag:
       remove_warning: 'Are you sure you want to <strong class="warning">permanently remove</strong> the Tag?'
       remove: 'Remove Tag "%{tag}"'
+      detach: 'Detach Tag "%{tag}"'
+      missing_page: 'Missing Page'

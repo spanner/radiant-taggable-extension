@@ -22,10 +22,10 @@
             %td{:style => 'width: 48px'}
               = link_to image('page', :class => "icon"), page.nil? ? '' : page.url
             %td.name
-              = link_to %{ <span class="title">#{ h( page.nil? ? 'DELETED PAGE' : page.title ) }</span>}, page.nil? ? '' : page.url
+              = link_to %{ <span class="title">#{ h( page.nil? ? t('text.tag.missing_page') : page.title ) }</span>}, page.nil? ? '' : page.url
             %td.actions
               = link_to_remote image('minus') + ' detach', |
-                :html => { :class => "action", :title => "Detach tag from page" }, |
+                :html => { :class => "action", :title => t('text.tag.detach', :tag => @tag.title) }, |
                 :url => admin_tagging_url(tagging), :method => :delete, |
                 :after => "Effect.Fade('#{dom_id}', { duration: 0.5 })", |
                 :complete => "Element.remove('#{dom_id}');"

@@ -11,6 +11,18 @@ class Tag < ActiveRecord::Base
   
   has_site if respond_to? :has_site
 
+  validates_presence_of :title
+  validates_format_of :title, :with => %r{^([-_.A-Za-z0-9]*|/)$}
+
+#  validate :keywords_format
+
+#  def keywords_format
+#    if !title.blank?
+#      errors.add( :page_slug, "Can't be blank" )
+#    end
+#  end
+
+
   # returns the subset of tags meant for public display and selection
   
   named_scope :visible, {

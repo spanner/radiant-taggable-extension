@@ -22,7 +22,6 @@ class Admin::TagsController < Admin::ResourceController
 
   def remove
     @tag = load_model
-
   end
     
 end

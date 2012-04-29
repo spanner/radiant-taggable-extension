@@ -34,8 +34,8 @@
                 :after => "Effect.Fade('#{dom_id}', { duration: 0.5 })", |
                 :complete => "Element.remove('#{dom_id}');"
 
-    - form_for [:admin, @tag], :html => {:method => :delete, 'data-onsubmit_status'=>"Removing pages&#8230;"} do
+    - form_for [:admin, @tag], :html => {:method => :delete, 'data-onsubmit_status'=>"Removing Tag&#8230;"} do
       .buttons
         %input.button{:type=>"submit", :value => "Delete" }/
         = t('or')
-        = link_to t('cancel'), admin_tag_url()
+        = link_to t('cancel'), admin_tags_url
