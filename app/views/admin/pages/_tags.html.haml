@@ -1,5 +1,5 @@
 - include_stylesheet 'admin/taggable'
-- include_javascript 'autocomplete'
+- include_javascript 'admin/controls'
 - include_javascript 'admin/taggable'
 - fields_for :page, @page do |f|
   %tr
@@ -7,3 +7,5 @@
       = f.label :keywords
     %td.field
       = f.text_field :keywords, :class => 'textbox tagger'
+      //= image_tag('admin/spinner.gif', :class => "autocomplete_spinner", :style =>"display:none;")
+      %div#autocomplete_choices.autocomplete

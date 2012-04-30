@@ -1,0 +1,5 @@
+%ul<
+  - unless @tags.empty?
+    - @tags.each do |tag|
+      %li<
+        = tag.title

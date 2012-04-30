@@ -10,7 +10,14 @@ class Admin::TagsController < Admin::ResourceController
       wants.any
     end
   end
-  
+
+  def search
+    tags = params[:page][:keywords] ? Tag.suggested_by(params[:page][:keywords]) : Tag.with_count
+    @tags = tags.sort
+    # TODO: Filter out already inserted keywords?
+    render "_autocomplete", :layout => false
+  end
+
   def show
     @tag = load_model
   end
