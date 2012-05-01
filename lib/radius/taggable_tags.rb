@@ -237,8 +237,13 @@ module Radius
         tag.locals.page = item
         result << tag.expand
       end
-      result
+      if paging && displayed_children.total_pages > 1
+        tag.locals.paginated_list = displayed_children
+        result << tag.render('pagination', tag.attr.dup)
+      end
+      result.flatten.join('')
     end
+
   
     desc %{
       Lists all the pages associated with a set of tags, in descending order of relatedness.
