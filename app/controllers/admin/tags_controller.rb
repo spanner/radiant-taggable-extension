@@ -6,7 +6,7 @@ class Admin::TagsController < Admin::ResourceController
     @tags = tags.sort
     respond_to do |wants|
       wants.xml { render :xml => @tags }
-      wants.json { render :json => { 'query' => params[:query], 'suggestions' => @tags.map(&:title) } }
+      wants.json { render :json => @tags.map(&:title)  }
       wants.any
     end
   end
