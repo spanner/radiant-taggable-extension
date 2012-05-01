@@ -3,6 +3,9 @@ class Admin::TagsController < Admin::ResourceController
   
   def index
     tags = params[:query] ? Tag.suggested_by(params[:query]) : Tag.with_count
+    present_tags = params[:content].to_s.split(",").collect!{ |p| p.strip }
+    present_tags.delete( params[:query] )
+    tags.reject! { |t| present_tags.include?(t.title) }
     @tags = tags.sort
     respond_to do |wants|
       wants.xml { render :xml => @tags }

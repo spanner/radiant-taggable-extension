@@ -33,7 +33,15 @@ var JSONCompleter = Class.create(Ajax.Autocompleter, {
 var TagSuggester = Behavior.create({
     initialize: function() {
         var textbox = this.element;
-        new JSONCompleter(textbox, "autocomplete_choices", "/admin/tags.json", { paramName: 'query', tokens: [',', ';'], method: 'get' });
+        new JSONCompleter(textbox, "autocomplete_choices", "/admin/tags.json", {
+            paramName: 'query',
+            tokens: [',', ';'], method: 'get',
+            callback: includeTags
+        });
+        // We send the current content along with the toke to prevent resuggestion
+        function includeTags(element, entry){
+            return entry +=  "&content=" + encodeURIComponent(element.value);
+        };
     }
 });
 
