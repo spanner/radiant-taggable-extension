@@ -254,7 +254,7 @@ module Radius
         raise TagError "cannot find a LibraryPage to link to."
       end
       
-      %{<a href="#{href}#{anchor}"#{attributes}>#{text}</a>}
+      %{<a href="#{href}#{anchor}" #{attributes}>#{text}</a>}
     end
 
     desc %{
@@ -283,7 +283,7 @@ module Radius
       attributes = options.inject(' ') { |s, (k, v)| s << %{#{k.downcase}="#{v}" } }.strip
       text = tag.double? ? tag.expand : tag.render('tag:name')
       href = tag.locals.page.path(tag.locals.page.requested_tags - [tag.locals.tag])
-      %{<a href="#{href}#{anchor}"#{attributes}>#{text}</a>}
+      %{<a href="#{href}#{anchor}" #{attributes}>#{text}</a>}
     end
 
     desc %{

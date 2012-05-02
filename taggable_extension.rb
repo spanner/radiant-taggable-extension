@@ -19,9 +19,11 @@ class TaggableExtension < Radiant::Extension
     UserActionObserver.instance.send :add_observer!, Tag                  # tags get creator-stamped
     Radiant::AdminUI.send :include, Taggable::AdminUI unless defined? admin.tag
     admin.tag ||= Radiant::AdminUI.load_taggable_regions
-    admin.asset.edit.add :extended_metadata, 'furniture'
     admin.asset.edit.add :extended_metadata, 'tags'
+		admin.asset.edit.add :extended_metadata, 'furniture'
     admin.page.edit.add :extended_metadata, 'tags'
+    admin.configuration.show.add :config, 'admin/configuration/taggable_show' #, :after => 'defaults'
+    admin.configuration.edit.add :form,   'admin/configuration/taggable_edit' #, :after => 'edit_defaults'
 
     tab("Content") do
       add_item("Tags", "/admin/tags")

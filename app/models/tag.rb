@@ -11,6 +11,9 @@ class Tag < ActiveRecord::Base
   
   has_site if respond_to? :has_site
 
+  validates_presence_of :title
+  validates_format_of :title, :with => %r{^([-_.A-Za-z0-9]*|/)$}
+
   # returns the subset of tags meant for public display and selection
   
   named_scope :visible, {

@@ -27,7 +27,7 @@
             - tbody.title_cell do
               %td.tag-title
                 = link_to image('tag', :alt => ''), edit_admin_tag_url(:id => tag.id) 
-                = link_to tag.title, edit_admin_tag_url(:id => tag.id) 
+                = link_to truncate(tag.title), edit_admin_tag_url(:id => tag.id)
 
             - tbody.link_cell do
               %td.tag-link
@@ -38,21 +38,20 @@
 
             - tbody.description_cell do
               %td.tag-description
-                = tag.description
-                
+                = truncate(tag.description)
+
             - tbody.usage_cell do
               %td.tag-usage
                 - if tag.use_count.to_i > 0
-                  = link_to "#{tag.use_count} #{pluralize(tag.use_count.to_i, 'item')}", admin_tag_url(tag)
+                  = link_to "#{pluralize(tag.use_count.to_i, 'item')}", admin_tag_url(tag)
                 - else
                   \-
-
             - tbody.modify_cell do
               %td.actions
                 = link_to image('minus') + ' ' + t('remove'), remove_admin_tag_url(tag), :class => "action"
  
-- render_region :bottom do |bottom|
-  - bottom.new_button do
-    #actions
-      %ul
-        %li= link_to image('plus') + " " + "new tag", new_admin_tag_url
+/- render_region :bottom do |bottom|
+/  - bottom.new_button do
+/    #actions
+/      %ul
+/        %li= link_to image('plus') + " " + "new tag", new_admin_tag_url

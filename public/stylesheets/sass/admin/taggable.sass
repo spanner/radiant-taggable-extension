@@ -60,30 +60,17 @@ p.keywords
 #attributes
   clear: both
 
-.autocomplete-w1
-  +box-shadow
-  position: absolute
-  top: 0
-  left: 0
-  background-color: #333
-
-.autocomplete-w2
-  padding: 0
-
-.autocomplete
-  font-family: Georgia, Palatino, "Times New Roman", Times, serif
-  width: 300px
-  opacity: 0.8
-  cursor: default
-  text-align: left
-  max-height: 350px
-  overflow: auto
-  margin: 0
-  div
-    padding: 5px 10px
-    white-space: nowrap
-    .selected
-      background: #f0f0f0
-  strong
-    font-weight: normal
-    color: #3399ff
+#autocomplete_choices
+  font-size: 1.2em
+  color: #333
+  background: #fff
+  border: 1px solid #777
+  border-radius: 5px
+  ul
+    margin: 0.2em
+  li
+    text-align: left
+    padding: 0.1em
+    cursor: pointer
+  .selected
+    color: #06c

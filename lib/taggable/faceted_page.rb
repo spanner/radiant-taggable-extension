@@ -76,6 +76,7 @@ module Taggable
       def add_request_tags(tags=[])
         if tags.any?
           tags.collect! { |tag| Tag.find_by_title(Rack::Utils::unescape(tag)) }
+          #tags.collect! { |tag| Tag.find_by_title(tag) }
           self.requested_tags = (self.requested_tags + tags.select{|t| !t.nil?}).uniq
         end
       end
